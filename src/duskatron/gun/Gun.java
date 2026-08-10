@@ -11,7 +11,7 @@ import java.util.Map;
 public class Gun {
 
     private static final double MIN_POWER = 1.0;
-    private static final double MAX_POWER = 3.0;
+    private static final double MAX_POWER = 6.0;
     private static final double FIRE_TOLERANCE = 0.02;
 
     private final AdvancedRobot root;

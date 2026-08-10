@@ -22,9 +22,6 @@ public class Duskatron extends AdvancedRobot {
     @Override
     public void run() {
 
-
-        turnLeft(getHeading() % 90);
-
         /*
             Allows radar and gun to rotate
             independently for advanced
