@@ -32,11 +32,13 @@ public class Radar {
 
         enemy.update(e, root);
 
+        root.setTurnRadarRight(Double.POSITIVE_INFINITY);
+        /*
         if (root.getOthers() == 1) {
             trackSingleEnemy(e);
         } else {
             pointAtOldestEnemy();
-        }
+        }*/
     }
 
     private void trackSingleEnemy(ScannedRobotEvent e) {
