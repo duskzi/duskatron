@@ -36,5 +36,6 @@ public class Enemy {
     public double getVelocity()     { return velocity; }
     public double getDistance()     { return distance; }
     public double getEnergy()       { return energy; }
+    public double getBearing()      { return bearing; }
     public long getLastScanTime()   { return lastScanTime; }
 }

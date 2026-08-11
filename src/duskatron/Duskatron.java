@@ -16,7 +16,7 @@ public class Duskatron extends AdvancedRobot {
             Wheel:  Handles movement
     */
     public Radar radar =     new Radar(this);
-    public Gun gun =         new Gun(this, radar);
+    public Gun gun =         new Gun(this);
     public Wheel wheel =     new Wheel(this);
 
     @Override
@@ -30,40 +30,31 @@ public class Duskatron extends AdvancedRobot {
         setAdjustGunForRobotTurn(true);
         setAdjustRadarForGunTurn(true);
 
+        /*  Bot colors  */
+        setRadarColor   (Color.ORANGE);
+        setBodyColor    (Color.BLACK);
+        setGunColor     (Color.DARK_GRAY);
+
         /*  Scans for all robots  */
         radar.init();
 
-        while(true){
+        /*  Main loop  */
+        while (true) {
 
             wheel.handleMovement();
             gun.aimAndFire();
             this.execute();
         }
+
     }
 
     @Override
-    public void onScannedRobot(ScannedRobotEvent e) {
-
-        radar.trackScannedBots(e);
-        wheel.update(e);
+    public void onHitWall(HitWallEvent event) {
+        setAhead(-80);
     }
 
-    @Override
-    public void onHitByBullet(HitByBulletEvent e) {
-
-        wheel.onHitByBullet(e);
-    }
-
-    @Override
-    public void onRobotDeath(RobotDeathEvent e) {
-
-        radar.removeEnemy(e.getName());
-        wheel.removeEnemy(e.getName());
-    }
-
-    @Override
-    public void onPaint(Graphics2D g) {
-        radar.onPaint(g);
-        wheel.onPaint(g);
-    }
+    /*  Radar's method calls  */
+    public void onScannedRobot(ScannedRobotEvent e)     { radar.trackScannedBots(e); }          // Look and turn radar
+    public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName()); }     // Removes from target map
+    public void onPaint(Graphics2D g)                   { radar.onPaint(g); }                   // Debug painting
 }

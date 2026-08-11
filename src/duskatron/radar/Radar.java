@@ -33,64 +33,6 @@ public class Radar {
         enemy.update(e, root);
 
         root.setTurnRadarRight(Double.POSITIVE_INFINITY);
-        /*
-        if (root.getOthers() == 1) {
-            trackSingleEnemy(e);
-        } else {
-            pointAtOldestEnemy();
-        }*/
-    }
-
-    private void trackSingleEnemy(ScannedRobotEvent e) {
-
-        double radarTurn =
-                root.getHeading()
-                        + e.getBearing()
-                        - root.getRadarHeading();
-
-        root.setTurnRadarRight(
-                1.9 * Utils.normalRelativeAngleDegrees(radarTurn)
-        );
-    }
-
-    private void pointAtOldestEnemy() {
-
-        Enemy target = getOldestEnemy();
-
-        if (target == null) {
-            root.setTurnRadarRight(Double.POSITIVE_INFINITY);
-            return;
-        }
-
-        double dx = target.getX() - root.getX();
-        double dy = target.getY() - root.getY();
-
-        double absoluteBearing =
-                Math.toDegrees(Math.atan2(dx, dy));
-
-        double radarTurn =
-                Utils.normalRelativeAngleDegrees(
-                        absoluteBearing - root.getRadarHeading()
-                );
-
-        // Overshoot to guarantee the radar crosses the target.
-        root.setTurnRadarRight(radarTurn * 1.5);
-    }
-
-    private Enemy getOldestEnemy() {
-
-        Enemy oldest = null;
-
-        for (Enemy enemy : targets.values()) {
-
-            if (oldest == null ||
-                    enemy.getLastScanTime() < oldest.getLastScanTime()) {
-
-                oldest = enemy;
-            }
-        }
-
-        return oldest;
     }
 
     public void removeEnemy(String name) {

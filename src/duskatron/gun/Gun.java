@@ -1,72 +1,70 @@
 package duskatron.gun;
 
+import duskatron.Duskatron;
 import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import duskatron.radar.Radar;
-import robocode.AdvancedRobot;
 import robocode.util.Utils;
 
 import java.util.Map;
 
 public class Gun {
 
-    private static final double MIN_POWER = 1.0;
-    private static final double MAX_POWER = 6.0;
-    private static final double FIRE_TOLERANCE = 0.02;
+    private final Duskatron root;
+    private final Radar     radar;
 
-    private final AdvancedRobot root;
-    private final Radar radar;
+    public static final double  FIREPOWER =     1;
 
-    public Gun(AdvancedRobot root, Radar radar) {
+    public Gun(Duskatron root) {
         this.root = root;
-        this.radar = radar;
+        this.radar = root.radar;
     }
-
     public void aimAndFire() {
+        Enemy target = getBestTarget(radar.getScannedBots());
 
-        Enemy target = pickTarget();
-        if (target == null) return;
+        if (target == null)
+            return;
 
-        double distance = meTo(target);
-        double power = Math.max(MIN_POWER, Math.min(MAX_POWER, 500 / distance));
+        double absoluteBearing =
+                root.getHeadingRadians()
+                        + Math.toRadians(target.getBearing());
 
-        double bulletSpeed = 20 - 3 * power;
-        double flightTime = distance / bulletSpeed;
-
-        double predictedX = target.getX() + Math.sin(Math.toRadians(target.getHeading())) * target.getVelocity() * flightTime;
-        double predictedY = target.getY() + Math.cos(Math.toRadians(target.getHeading())) * target.getVelocity() * flightTime;
-
-        double aimAngle = Math.atan2(predictedX - root.getX(), predictedY - root.getY());
-        double gunTurn = Utils.normalRelativeAngle(aimAngle - root.getGunHeadingRadians());
+        double gunTurn =
+                Utils.normalRelativeAngle(
+                        absoluteBearing - root.getGunHeadingRadians()
+                );
 
         root.setTurnGunRightRadians(gunTurn);
 
-        if (root.getGunHeat() == 0 && Math.abs(gunTurn) < FIRE_TOLERANCE) {
-            root.setFire(power);
+        if (Math.abs(gunTurn) < Math.toRadians(3)
+                && root.getGunHeat() == 0
+                && root.getEnergy() > FIREPOWER + 0.1) {
+
+            root.setFire(FIREPOWER);
         }
     }
 
-    private double meTo(Enemy enemy) {
-        return new Vec2D(root.getX(), root.getY()).distance(new Vec2D(enemy.getX(), enemy.getY()));
-    }
+    public Enemy getBestTarget(Map<String, Enemy> targets) {
+        Enemy bestTarget = null;
 
-    private Enemy pickTarget() {
-
-        Map<String, Enemy> targets = radar.getScannedBots();
-
-        Enemy closest = null;
         double closestDistance = Double.MAX_VALUE;
 
-        for (Enemy enemy : targets.values()) {
-            if (!enemy.exists()) continue;
+        for (Enemy e : targets.values()) {
+            double toBotDistance = getDistance(e.getX(), e.getY(), root.getX(), root.getY());
 
-            double distance = meTo(enemy);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closest = enemy;
+            if (toBotDistance < closestDistance) {
+                closestDistance = toBotDistance;
+                bestTarget = e;
             }
         }
 
-        return closest;
+        return bestTarget;
     }
+
+
+    public static double getDistance(double x1, double y1, double x2, double y2) {
+
+        return Math.sqrt((x2 - x1) *  (x2 - x1) + (y2 - y1) * (y2 - y1));
+    }
+
 }
