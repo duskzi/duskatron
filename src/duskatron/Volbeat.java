@@ -1,11 +1,4 @@
-package duskatron;/*
-Equipe duskatron.Volbeat
-
-Lucas de Souza Siqueira - lucas.s.siqueira.2009@gmail.com
-
-2º DS (AMS) - ETEC Bento Quirino
-
-*/
+package duskatron;
 
 import robocode.*;
 import robocode.util.Utils;

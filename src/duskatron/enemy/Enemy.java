@@ -1,5 +1,6 @@
 package duskatron.enemy;
 
+import duskatron.math.Vec2D;
 import robocode.ScannedRobotEvent;
 import robocode.Robot;
 
@@ -29,6 +30,7 @@ public class Enemy {
     public boolean exists()         { return !this.name.isEmpty(); }
 
     /*  Getters  */
+    public Vec2D getPosition()      { return new Vec2D(x, y); }
     public String getName()         { return name; }
     public double getX()            { return x; }
     public double getY()            { return y; }
