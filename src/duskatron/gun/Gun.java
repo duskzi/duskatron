@@ -1,6 +1,7 @@
 package duskatron.gun;
 
 import duskatron.Duskatron;
+import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import duskatron.radar.Radar;
@@ -10,15 +11,14 @@ import java.util.Map;
 
 public class Gun {
 
-    private final Duskatron root;
-    private final Radar     radar;
-
     public static final double  FIREPOWER =     1;
 
-    public Gun(Duskatron root) {
-        this.root = root;
-        this.radar = root.radar;
-    }
+    /*  Bot parts inside bot context  */
+    private final DuskatronContext bot;
+
+    public Gun(DuskatronContext ctx) { this.bot = ctx; }
+
+
     public void aimAndFire() {
         Enemy target = getBestTarget(radar.getScannedBots());
 

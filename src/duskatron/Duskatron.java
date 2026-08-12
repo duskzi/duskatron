@@ -1,5 +1,7 @@
 package duskatron;
 
+import duskatron.arena.Arena;
+import duskatron.context.DuskatronContext;
 import duskatron.gun.Gun;
 import duskatron.movement.Wheel;
 import duskatron.radar.Radar;
@@ -15,12 +17,29 @@ public class Duskatron extends AdvancedRobot {
             Gun:    Shoots when aim find something
             Wheel:  Handles movement
     */
-    public Radar radar =     new Radar(this);
-    public Gun gun =         new Gun(this);
-    public Wheel wheel =     new Wheel(this);
+
+    DuskatronContext ctx =  new DuskatronContext();
+
+    public Radar radar =    new Radar(ctx);
+    public Gun gun =        new Gun(ctx);
+    public Wheel wheel =    new Wheel(ctx);
+
+    /*
+        Arena holds battlefield width and height
+    */
+    public Arena arena =    new Arena(
+            this.getBattleFieldWidth(),
+            this.getBattleFieldHeight());
 
     @Override
     public void run() {
+
+        /*
+            Pass all parts references to the
+            context to be used later inside
+            each part
+        */
+        ctx.bindParts(radar, gun, wheel, arena);
 
         /*
             Allows radar and gun to rotate

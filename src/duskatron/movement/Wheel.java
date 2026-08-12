@@ -1,6 +1,8 @@
 package duskatron.movement;
 
 import duskatron.Duskatron;
+import duskatron.arena.Arena;
+import duskatron.context.DuskatronContext;
 import duskatron.enemy.Antigravity;
 import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
@@ -17,14 +19,10 @@ public class Wheel {
     public static double        MARGIN              = 50.0;
     public static double        WALL_TANGENT_FACTOR = 0.78;
 
-    /*  Bot parts  */
-    private final   Duskatron   root;
-    private final   Radar       radar;
+    /*  Bot parts inside bot context  */
+    private final DuskatronContext bot;
 
-    public Wheel(Duskatron root) {
-        this.root  = root;
-        this.radar = root.radar;
-    }
+    public Wheel(DuskatronContext ctx) { this.bot = ctx; }
 
     public void handleMovement() {
 
@@ -42,6 +40,8 @@ public class Wheel {
         double targetAngle  = Math.atan2(finalForce.x, finalForce.y);
         double angleToTurn  = normalizeAngle(targetAngle - root.getHeadingRadians());
 
+        angleToTurn = smoothHeading(angleToTurn, root.getX(), root.getY(), )
+
         optimalTurnAndGo(angleToTurn, 100);
 
     }
@@ -55,5 +55,25 @@ public class Wheel {
             root.setTurnRightRadians(angleToTurn);
             root.setAhead(ahead);
         }
+    }
+
+    public double smoothHeading(double desiredAngle, double x, double y, Arena arena, double margin){
+
+        double lookAheadDistance =  30;
+        double angleStep =          5;
+
+        double heading = desiredAngle;
+
+        while(!isInsideSafeRect(x, y, arena.getWidth(), arena.getHeight(), margin)){
+            /*  TODO: Check for the best orientation (counterclockwise or clockwise)  */
+            heading += angleStep;
+        }
+
+        return heading;
+    }
+
+    public boolean isInsideSafeRect(double x, double y, double w, double h, double margin){
+
+        return (margin <= x <= w-margin) && (margin <= y <= h-margin)
     }
 }

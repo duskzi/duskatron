@@ -1,5 +1,6 @@
 package duskatron.radar;
 
+import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
@@ -11,12 +12,12 @@ import java.util.Map;
 
 public class Radar {
 
-    private final AdvancedRobot root;
     private final Map<String, Enemy> targets = new HashMap<>();
 
-    public Radar(AdvancedRobot duskatron) {
-        this.root = duskatron;
-    }
+    /*  Bot parts inside bot context  */
+    private final DuskatronContext bot;
+
+    public Radar(DuskatronContext ctx) { this.bot = ctx; }
 
     public void init() {
         // Initial acquisition.
