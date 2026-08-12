@@ -1,5 +1,6 @@
 package duskatron.movement;
 
+import duskatron.Constants;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Antigravity;
@@ -10,13 +11,9 @@ import java.util.Map;
 
 import static duskatron.math.AngleUtil.normalizeAngle;
 
-public class Wheel {
+public class Wheel implements Constants {
 
-    public static final double ENEMY_STRENGTH =     50.0;
-    public static final double MARGIN =             30.0;
-    public static final double LOOK_AHEAD_DIST =    140.0;
-
-    private final DuskatronContext bot;
+    protected final DuskatronContext bot;
 
     public Wheel(DuskatronContext ctx) {
         this.bot = ctx;
@@ -25,10 +22,11 @@ public class Wheel {
     public void handleMovement() {
         Map<String, Enemy> scannedBots = bot.radar().getScannedBots();
 
-        Vec2D enemyForce = Antigravity.getEnemyForce(
+        Vec2D enemyForce = Antigravity.getMovementForce(
                 bot.robot().getX(),
                 bot.robot().getY(),
-                scannedBots
+                scannedBots,
+                bot.robot().getTime()
         );
 
         double targetAngle = Math.atan2(enemyForce.x, enemyForce.y);

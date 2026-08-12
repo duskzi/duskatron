@@ -27,6 +27,27 @@ public class Radar {
         startSweep();
     }
 
+    public Enemy getClosestEnemy() {
+        Enemy closest = null;
+        double closestDistSq = Double.MAX_VALUE;
+
+        double x = bot.robot().getX();
+        double y = bot.robot().getY();
+
+        for (Enemy enemy : targets.values()) {
+            double dx = enemy.getX() - x;
+            double dy = enemy.getY() - y;
+            double distSq = dx * dx + dy * dy;
+
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
+                closest = enemy;
+            }
+        }
+
+        return closest;
+    }
+
     public void trackScannedBots(ScannedRobotEvent e) {
         updateRadarColor();
         long time = bot.robot().getTime();

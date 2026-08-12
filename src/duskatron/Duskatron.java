@@ -3,6 +3,7 @@ package duskatron;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.gun.Gun;
+import duskatron.movement.MrmWheel;
 import duskatron.movement.Wheel;
 import duskatron.radar.Radar;
 import robocode.*;
@@ -25,7 +26,7 @@ public class Duskatron extends AdvancedRobot {
     */
     public Radar radar = new Radar(ctx);
     public Gun gun = new Gun(ctx);
-    public Wheel wheel = new Wheel(ctx);
+    public Wheel wheel = new MrmWheel(ctx);
 
     /*
         Arena holds battlefield width and height

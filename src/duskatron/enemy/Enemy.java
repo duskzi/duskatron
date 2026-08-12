@@ -4,6 +4,9 @@ import duskatron.math.Vec2D;
 import robocode.ScannedRobotEvent;
 import robocode.Robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Enemy {
 
     private String name;
@@ -11,19 +14,53 @@ public class Enemy {
     private double bearing, distance, energy, heading, velocity;
     private long lastScanTime;
 
+    private final List<Bullet> bullets = new ArrayList<>();
+    private boolean scanned = false;
+
     public void update(ScannedRobotEvent e, Robot me) {
         this.name =         e.getName();
         this.bearing =      e.getBearing();
         this.distance =     e.getDistance();
-        this.energy =       e.getEnergy();
         this.heading =      e.getHeading();
         this.velocity =     e.getVelocity();
+
+        double previousEnergy = this.energy;
+        this.energy =       e.getEnergy();
 
         double absoluteBearing =    Math.toRadians(me.getHeading() + e.getBearing());
         this.x =                    me.getX() + Math.sin(absoluteBearing) * e.getDistance();
         this.y =                    me.getY() + Math.cos(absoluteBearing) * e.getDistance();
 
         this.lastScanTime = me.getTime();
+
+        detectBulletFire(previousEnergy, me);
+        pruneBullets(me.getTime());
+    }
+
+    private void detectBulletFire(double previousEnergy, Robot me) {
+        if (!scanned) {
+            scanned = true;
+            return;
+        }
+
+        double energyDrop = previousEnergy - energy;
+
+        // A fired bullet costs the enemy its power (0.1 .. 3.0).
+        // We assume they aimed at us, which is accurate enough for dodging.
+        if (energyDrop >= 0.1 && energyDrop <= 3.0) {
+            double bulletHeading = Math.atan2(me.getX() - x, me.getY() - y);
+
+            bullets.add(new Bullet(
+                    new Vec2D(x, y),
+                    bulletHeading,
+                    energyDrop,
+                    me.getTime()
+            ));
+        }
+    }
+
+    private void pruneBullets(long time) {
+        bullets.removeIf(bullet -> !bullet.isAlive(time));
     }
 
     public void reset()             { this.name = ""; }
@@ -40,4 +77,5 @@ public class Enemy {
     public double getEnergy()       { return energy; }
     public double getBearing()      { return bearing; }
     public long getLastScanTime()   { return lastScanTime; }
+    public List<Bullet> getBullets(){ return bullets; }
 }

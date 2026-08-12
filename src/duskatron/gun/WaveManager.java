@@ -13,7 +13,6 @@ import java.util.List;
 public class WaveManager {
 
     public static final int NUM_BINS = 31;
-    public static final double FIREPOWER = 1.0;
 
     private final DuskatronContext bot;
     private final List<WaveBullet> waves = new ArrayList<>();
@@ -37,10 +36,12 @@ public class WaveManager {
 
         updateDirection(e, absoluteBearing);
 
+        double firepower = getBestPower(e.getDistance());
+
         WaveBullet newWave = new WaveBullet(
                 new Vec2D(bot.robot().getX(), bot.robot().getY()),
                 absoluteBearing,
-                FIREPOWER,
+                firepower,
                 direction,
                 bot.robot().getTime(),
                 stats
@@ -58,7 +59,7 @@ public class WaveManager {
         );
         bot.robot().setTurnGunRightRadians(gunAdjust);
 
-        if (bot.robot().setFireBullet(FIREPOWER) != null) {
+        if (bot.robot().setFireBullet(firepower) != null) {
             waves.add(newWave);
         }
     }
@@ -99,6 +100,22 @@ public class WaveManager {
                 / ((double) (stats.length - 1) / 2);
     }
 
+    // Distance-based firepower selection (Robowii's getBestPower).
+    // The closer the enemy, the harder we shoot.
+    private double getBestPower(double distance) {
+        if (distance < 200) {
+            return 3;
+        } else if (distance < 400) {
+            return 2.5;
+        } else if (distance < 600) {
+            return 2;
+        } else if (distance < 800) {
+            return 1.5;
+        } else {
+            return 1;
+        }
+    }
+
     public void onPaint(Graphics2D g) {
         g.setColor(Color.YELLOW);
 
@@ -108,7 +125,7 @@ public class WaveManager {
 
             // 2. Calculate the actual radius based on Robocode bullet physics
             // Bullet velocity = 20 - (3 * bulletPower)
-            double bulletVelocity = 20.0 - (3.0 * FIREPOWER);
+            double bulletVelocity = wave.getBulletSpeed();
             int radius = (int) (timeElapsed * bulletVelocity);
             int diameter = radius * 2;
 
