@@ -1,5 +1,6 @@
 package duskatron.context;
 
+import duskatron.Duskatron;
 import duskatron.arena.Arena;
 import duskatron.gun.Gun;
 import duskatron.movement.Wheel;

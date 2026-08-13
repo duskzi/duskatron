@@ -3,6 +3,7 @@ package duskatron;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.gun.Gun;
+import duskatron.math.Vec2D;
 import duskatron.movement.MrmWheel;
 import duskatron.movement.Wheel;
 import duskatron.radar.Radar;
@@ -26,7 +27,7 @@ public class Duskatron extends AdvancedRobot {
     */
     public Radar radar = new Radar(ctx);
     public Gun gun = new Gun(ctx);
-    public Wheel wheel = new MrmWheel(ctx);
+    public MrmWheel wheel = new MrmWheel(ctx);
 
     /*
         Arena holds battlefield width and height
@@ -37,6 +38,7 @@ public class Duskatron extends AdvancedRobot {
     public void run() {
 
         arena = new Arena(
+                ctx,
                 this.getBattleFieldWidth(),
                 this.getBattleFieldHeight());
 
@@ -68,6 +70,9 @@ public class Duskatron extends AdvancedRobot {
         /*  Main loop  */
         while (true) {
             wheel.handleMovement();
+            wheel.recordPositions();
+
+            gun.handleGun();
             this.execute();
         }
     }
@@ -85,5 +90,6 @@ public class Duskatron extends AdvancedRobot {
     public void onPaint(Graphics2D g) {
         radar.onPaint(g);
         gun.onPaint(g);
+        wheel.onPaint(g);
     }
 }

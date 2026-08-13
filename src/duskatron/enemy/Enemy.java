@@ -67,15 +67,16 @@ public class Enemy {
     public boolean exists()         { return !this.name.isEmpty(); }
 
     /*  Getters  */
-    public Vec2D getPosition()      { return new Vec2D(x, y); }
-    public String getName()         { return name; }
-    public double getX()            { return x; }
-    public double getY()            { return y; }
-    public double getHeading()      { return heading; }
-    public double getVelocity()     { return velocity; }
-    public double getDistance()     { return distance; }
-    public double getEnergy()       { return energy; }
-    public double getBearing()      { return bearing; }
-    public long getLastScanTime()   { return lastScanTime; }
-    public List<Bullet> getBullets(){ return bullets; }
+    public Vec2D getPosition()              { return new Vec2D(x, y); }
+    public String getName()                 { return name; }
+    public double getX()                    { return x; }
+    public double getY()                    { return y; }
+    public double getHeading()              { return heading; }
+    public double getVelocity()             { return velocity; }
+    public double getDistance()             { return distance; }
+    public double getEnergy()               { return energy; }
+    public double getBearing()              { return bearing; }
+    public double getBearingRadians()       { return Math.toRadians(bearing); }
+    public long getLastScanTime()           { return lastScanTime; }
+    public List<Bullet> getBullets()        { return bullets; }
 }

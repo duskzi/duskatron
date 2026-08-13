@@ -8,8 +8,15 @@ public class Vec2D {
         this.y = y;
     }
 
-    public Vec2D add(Vec2D v) { return new Vec2D(this.x + v.x, this.y + v.y); }
-    public Vec2D sub(Vec2D v) { return new Vec2D(this.x - v.x, this.y - v.y); }
-    public double distance(Vec2D v) { return Math.hypot(this.x - v.x, this.y - v.y); }
+    public Vec2D add(Vec2D v)           { return new Vec2D(this.x + v.x, this.y + v.y); }
+    public Vec2D sub(Vec2D v)           { return new Vec2D(this.x - v.x, this.y - v.y); }
+    public double distance(Vec2D v)     { return Math.hypot(this.x - v.x, this.y - v.y); }
+
+    public double distanceSq(Vec2D v) {
+        double dx = this.x - v.x;
+        double dy = this.y - v.y;
+        return dx * dx + dy * dy;
+    }
+
 }
 

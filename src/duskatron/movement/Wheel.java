@@ -6,7 +6,10 @@ import duskatron.context.DuskatronContext;
 import duskatron.enemy.Antigravity;
 import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
+import robocode.util.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static duskatron.math.AngleUtil.normalizeAngle;
@@ -14,9 +17,21 @@ import static duskatron.math.AngleUtil.normalizeAngle;
 public class Wheel implements Constants {
 
     protected final DuskatronContext bot;
+    private List<Vec2D> pastPositions = new ArrayList<>();
 
     public Wheel(DuskatronContext ctx) {
         this.bot = ctx;
+    }
+
+    public void recordPositions() {
+
+        pastPositions.add(new Vec2D(bot.robot().getX(), bot.robot().getY()));
+
+        if (pastPositions.size() > NUMBER_OF_RECORDS) { pastPositions.removeFirst(); }
+    }
+
+    public List<Vec2D> getRecordedPositions() {
+        return pastPositions;
     }
 
     public void handleMovement() {
@@ -46,16 +61,38 @@ public class Wheel implements Constants {
         optimalTurnAndGo(angleToTurn, 100);
     }
 
+    protected void goTo(Vec2D location) {
+        double dx = location.x - bot.robot().getX();
+        double dy = location.y - bot.robot().getY();
+
+        double angleToTarget = Math.atan2(dx, dy);
+        double turnAngle = Utils.normalRelativeAngle(angleToTarget - bot.robot().getHeadingRadians());
+
+        // Folding into [-90°, 90°] via atan(tan(...)) means "facing away" is handled
+        // by driving backward instead of doing a near-180° turn.
+        double turnRadians = Math.atan(Math.tan(turnAngle));
+        bot.robot().setTurnRightRadians(turnRadians);
+
+        double distance = Math.hypot(dx, dy);
+        // Scaling by cos(turnAngle) kills forward motion while still turning hard,
+        // and ramps it back up as heading converges — no lurch, no overshoot spikes.
+        bot.robot().setAhead(Math.cos(turnAngle) * distance);
+    }
+
     public void optimalTurnAndGo(double angleToTurn, double ahead) {
+
+
+        double tune = Math.sin(bot.robot().getTime() / 2.0) / 2.0;
+
         if (Math.abs(angleToTurn) > Math.PI / 2) {
             angleToTurn -= Math.signum(angleToTurn) * Math.PI;
 
             bot.robot().setTurnRightRadians(
                     normalizeAngle(angleToTurn)
             );
-            bot.robot().setAhead(-ahead);
+            bot.robot().setAhead(-ahead + tune);
         } else {
-            bot.robot().setTurnRightRadians(angleToTurn);
+            bot.robot().setTurnRightRadians(angleToTurn + tune);
             bot.robot().setAhead(ahead);
         }
     }
