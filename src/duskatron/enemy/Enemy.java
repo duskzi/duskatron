@@ -76,6 +76,7 @@ public class Enemy {
     public double getDistance()             { return distance; }
     public double getEnergy()               { return energy; }
     public double getBearing()              { return bearing; }
+    public double getHeadingRadians()       { return Math.toRadians(heading); }
     public double getBearingRadians()       { return Math.toRadians(bearing); }
     public long getLastScanTime()           { return lastScanTime; }
     public List<Bullet> getBullets()        { return bullets; }

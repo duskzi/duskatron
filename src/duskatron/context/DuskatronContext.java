@@ -2,6 +2,7 @@ package duskatron.context;
 
 import duskatron.Duskatron;
 import duskatron.arena.Arena;
+import duskatron.gun.Cannon;
 import duskatron.gun.Gun;
 import duskatron.movement.Wheel;
 import duskatron.radar.Radar;
@@ -9,7 +10,7 @@ import robocode.AdvancedRobot;
 
 public class DuskatronContext {
 
-    private Gun               gun;        /*  Gun part  */
+    private Cannon            gun;        /*  Gun part  */
     private Radar             radar;      /*  Radar part  */
     private Wheel             wheel;      /*  Wheel part  */
     private Arena             arena;      /*  Battlefield arena  */
@@ -30,7 +31,7 @@ public class DuskatronContext {
         Bot bot = new Bot(...);
         gun.bind(bot);
     */
-    public void bindParts(AdvancedRobot robot, Radar radar, Gun gun, Wheel wheel, Arena arena) {
+    public void bindParts(AdvancedRobot robot, Radar radar, Cannon gun, Wheel wheel, Arena arena) {
         this.robot = robot;
         this.radar = radar;
         this.gun = gun;
@@ -39,7 +40,7 @@ public class DuskatronContext {
     }
 
     public AdvancedRobot robot()    { return robot; }
-    public Gun gun()                { return gun; }
+    public Cannon gun()                { return gun; }
     public Radar radar()            { return radar; }
     public Wheel wheel()            { return wheel; }
     public Arena arena()            { return arena; }

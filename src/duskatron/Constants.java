@@ -5,6 +5,13 @@ public interface Constants {
     /*  Wall smoothing  */
     public static final double MARGIN =                 30.0;
     public static final double LOOK_AHEAD_DIST =        140.0;
+
+    double HOF_ARRIVAL_THRESHOLD = 15;
+    double HOF_WALL_MARGIN = 30;
+    int HOF_SEARCH_ATTEMPTS = 200;
+    double HOF_SEARCH_MIN_DIST = 100;
+    double HOF_SEARCH_RANGE = 200;
+
     /* Minimum Risk Movement */
 
     public static final int MRM_POINT_COUNT = 32;
@@ -15,7 +22,7 @@ public interface Constants {
      * 110 px gives the robot enough room to meaningfully change
      * direction without making every decision excessively far ahead.
      */
-    public static final double MRM_DISTANCE = 110.0;
+    public static final double MRM_DISTANCE = 100.0;
 
     /*
      * Desired distance from arena walls.

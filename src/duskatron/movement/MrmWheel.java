@@ -22,71 +22,8 @@ public class MrmWheel extends Wheel implements Constants {
         super(ctx);
     }
 
-    private double trembleDirection = 1.0;
-    private long nextTrembleTick = 0;
-
-    private static final double TREMBLE_ANGLE = Math.toRadians(12.0);
-
-    private static final long TREMBLE_DURATION = 6;
-
-    public void goTo(Vec2D destination) {
-        double x = bot.robot().getX();
-        double y = bot.robot().getY();
-
-        double dx = destination.x - x;
-        double dy = destination.y - y;
-
-        if (dx == 0.0 && dy == 0.0) {
-            return;
-        }
-
-        /*
-         * Your coordinate system:
-         *   0 = north
-         *   PI/2 = east
-         */
-        double desiredAngle =
-                Math.atan2(dx, dy);
-
-        /*
-         * Change wobble direction periodically.
-         */
-        long time = bot.robot().getTime();
-
-        if (time >= nextTrembleTick) {
-            trembleDirection = -trembleDirection;
-            nextTrembleTick = time + TREMBLE_DURATION;
-        }
-
-        /*
-         * Slightly rotate the target direction left/right.
-         */
-        double trembledAngle =
-                desiredAngle
-                        + trembleDirection * TREMBLE_ANGLE;
-
-        /*
-         * Use your normal shortest-path GoTo logic.
-         */
-        double turn =
-                Utils.normalRelativeAngle(
-                        trembledAngle
-                                - bot.robot().getHeadingRadians()
-                );
-
-        double distance =
-                Math.hypot(dx, dy);
-
-        if (Math.abs(turn) > Math.PI / 2) {
-            turn = Utils.normalRelativeAngle(turn + Math.PI);
-            distance = -distance;
-        }
-
-        bot.robot().setTurnRightRadians(turn);
-        bot.robot().setAhead(distance);
-    }
-
     public void handleMovement() {
+
         ArrayList<Enemy> enemies = new ArrayList<>(
                 bot.radar().getScannedBots().values()
         );
@@ -107,10 +44,14 @@ public class MrmWheel extends Wheel implements Constants {
              *   y += cos(angle)
              */
             double angle = (PI * 2.0) * i / MRM_POINT_COUNT;
+            double RANDOM_OFFSET = 50;
+
+            double randomX  = (Math.random() * (RANDOM_OFFSET * 2.0)) - RANDOM_OFFSET;
+            double randomY  = (Math.random() * (RANDOM_OFFSET * 2.0)) - RANDOM_OFFSET;
 
             Vec2D destination = new Vec2D(
-                    robotX + sin(angle) * MRM_DISTANCE,
-                    robotY + cos(angle) * MRM_DISTANCE
+                    robotX + sin(angle) * MRM_DISTANCE + randomX,
+                    robotY + cos(angle) * MRM_DISTANCE + randomY
             );
 
             points.add(
@@ -175,7 +116,7 @@ public class MrmWheel extends Wheel implements Constants {
 
         double totalRisk =
                 ENEMY_RISK_WEIGHT * enemyRisk
-                        + CLOSEST_BOT_RISK_WEIGHT * closestBotRisk
+                        /*+ CLOSEST_BOT_RISK_WEIGHT * closestBotRisk*/
                         + WALL_RISK_WEIGHT * wallRisk
                         + TRAIL_RISK_WEIGHT * trailRisk;
 
@@ -207,91 +148,44 @@ public class MrmWheel extends Wheel implements Constants {
             return 0.0;
         }
 
-        double safeProbability = 1.0;
-
-        double myEnergy = max(bot.robot().getEnergy(), 1.0);
+        double risk = 0.0;
 
         for (Enemy enemy : enemies) {
             if (!enemy.exists()) {
                 continue;
             }
 
-            double distance =
-                    sqrt(destination.distanceSq(enemy.getPosition()));
+            Vec2D enemyPosition = enemy.getPosition();
 
-            /*
-             * 0 when very far away.
-             * Approaches 1 when very close.
-             */
+            // Distance from the candidate destination to the enemy.
+            double distance =
+                    sqrt(destination.distanceSq(enemyPosition));
+
+            // Close enemies are more dangerous.
             double distanceRisk =
                     exp(-distance / ENEMY_DISTANCE_SCALE);
 
-            /*
-             * Convert enemy bearing into an absolute battlefield angle.
-             */
-            double enemyAbsoluteBearing =
-                    bot.robot().getHeadingRadians()
-                            + enemy.getBearingRadians();
+            // Direction from our candidate position to the enemy.
+            double enemyBearing =
+                    atan2(
+                            enemyPosition.x - destination.x,
+                            enemyPosition.y - destination.y
+                    );
 
-            /*
-             * Difference between our movement direction
-             * and the direction toward the enemy.
-             */
+            // Diamond-style orbital movement:
+            // perpendicular = safer, toward/away = more dangerous.
             double angleDifference =
                     Utils.normalRelativeAngle(
-                            movementAngle - enemyAbsoluteBearing
+                            movementAngle - enemyBearing
                     );
 
-            /*
-             * 1.0 = moving directly toward/away from enemy
-             * 0.0 = perfectly perpendicular
-             *
-             * Diamond's melee movement explicitly favors
-             * perpendicular movement.
-             */
-            double perpendicularRisk =
-                    abs(cos(angleDifference));
+            double orbitalRisk =
+                    0.25 + 0.75 * abs(cos(angleDifference));
 
-            /*
-             * Higher-energy enemies are somewhat more important.
-             *
-             * Relative energy is used instead of an arbitrary 4x multiplier.
-             */
-            double energyRatio =
-                    enemy.getEnergy() / myEnergy;
-
-            double energyRisk =
-                    Math.clamp(
-                            0.5 + 0.5 * energyRatio,
-                            0.5,
-                            1.5
-                    );
-
-            /*
-             * Combine the three factors.
-             */
-            double individualRisk =
-                    distanceRisk
-                            * (0.5 + 0.5 * perpendicularRisk)
-                            * energyRisk;
-
-            individualRisk =
-                    Math.clamp(
-                            individualRisk,
-                            0.0,
-                            1.0
-                    );
-
-            /*
-             * Treat each enemy as another source of danger.
-             *
-             * This combines multiple enemies without allowing
-             * the result to exceed 1.0.
-             */
-            safeProbability *= (1.0 - individualRisk);
+            risk += distanceRisk * orbitalRisk;
         }
 
-        return 1.0 - safeProbability;
+        return Math.clamp(risk, 0.0, 1.0);
     }
 
     /**

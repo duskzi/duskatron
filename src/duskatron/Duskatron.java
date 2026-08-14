@@ -2,9 +2,10 @@ package duskatron;
 
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
+import duskatron.gun.Cannon;
 import duskatron.gun.Gun;
-import duskatron.math.Vec2D;
-import duskatron.movement.MrmWheel;
+import duskatron.gun.GunManager;
+import duskatron.movement.HawkOnFireWheel;
 import duskatron.movement.Wheel;
 import duskatron.radar.Radar;
 import robocode.*;
@@ -25,9 +26,9 @@ public class Duskatron extends AdvancedRobot {
             Gun:    Shoots when aim find something
             Wheel:  Handles movement
     */
-    public Radar radar = new Radar(ctx);
-    public Gun gun = new Gun(ctx);
-    public MrmWheel wheel = new MrmWheel(ctx);
+    public Radar radar =        new Radar(ctx);
+    public Cannon gun =         new GunManager(ctx);
+    public Wheel wheel =        new HawkOnFireWheel(ctx);
 
     /*
         Arena holds battlefield width and height
@@ -80,7 +81,7 @@ public class Duskatron extends AdvancedRobot {
     /*  Radar's method calls  */
     public void onScannedRobot(ScannedRobotEvent e) {
         radar.trackScannedBots(e);
-        gun.onScannedRobot(e);
+        //gun.onScannedRobot(e);
     }
 
     public void onRobotDeath(RobotDeathEvent e) {

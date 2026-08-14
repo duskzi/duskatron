@@ -8,20 +8,18 @@ import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import robocode.util.Utils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static duskatron.math.AngleUtil.normalizeAngle;
 
-public class Wheel implements Constants {
+public class AntigravityWheel extends Wheel implements Constants {
 
     private List<Vec2D> pastPositions = new ArrayList<>();
-    DuskatronContext bot;
 
-    public Wheel(DuskatronContext ctx) {
-        this.bot = ctx;
+    public AntigravityWheel(DuskatronContext ctx) {
+        super(ctx);
     }
 
     public void recordPositions() {
@@ -195,6 +193,4 @@ public class Wheel implements Constants {
                 margin
         );
     }
-
-    public void onPaint(Graphics2D g) {}
 }
