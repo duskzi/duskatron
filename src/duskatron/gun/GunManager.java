@@ -7,6 +7,7 @@ import duskatron.gun.guns.Gun;
 import duskatron.gun.guns.HeadOnGun;
 import duskatron.gun.guns.LinearGun;
 import duskatron.math.Vec2D;
+import robocode.util.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,16 +30,18 @@ public class GunManager extends Cannon {
     /*
         Enemy name: statistics for every gun used against that enemy
     */
-    private final HashMap<String, List<GunStats>> enemyGunStats;
+    private static final HashMap<String, List<GunStats>> enemyGunStats = new HashMap<>();
 
     public GunManager(DuskatronContext ctx) {
         this.bot = ctx;
 
         this.bullets =          new ArrayList<>();
         this.guns =             new ArrayList<>();
-        this.enemyGunStats =    new HashMap<>();
 
-        /*  Returns all angles in Radians  */
+        /*
+            Returns all angles in
+            absolute angle in radians
+        */
         guns.add(new LinearGun(ctx));
         guns.add(new CircularGun(ctx));
         guns.add(new HeadOnGun(ctx));
@@ -53,24 +56,31 @@ public class GunManager extends Cannon {
 
         Enemy e = bot.radar().getClosestEnemy();
 
-        if(bot.robot().getTime() % 4 == 0) { testVirtualAim(e); }
+        if (bot.robot().getTime() % 4 == 0) {
+            testVirtualAim(e);
+        }
 
         /*
             Make sure every scanned enemy has a GunStats
             for every gun we have
         */
-        for (Enemy enemy : targets.values()) {
-            ensureGunStats(enemy);
-        }
+        for (Enemy enemy : targets.values()) { ensureGunStats(enemy); }
 
         checkForVirtualBulletsCollisions();
 
-        Gun freakingFuckingTheBestGunInTheWorld = getBestGunAgainst(e.getName());
-        double power = GunUtils.getBestPower(e.getDistance());
-        double angleInRadians = freakingFuckingTheBestGunInTheWorld.aimAngleFunction(e, power);
-        bot.robot().setTurnRightRadians(angleInRadians);
+        /*  No enemy -> nothing to aim/shoot at, so skip  */
+        if (e == null) { return; }
 
-        if(bot.robot().getTime() % 10 == 0) bot.robot().setFire(power);
+        Gun bestGun = getBestGunAgainst(e.getName());
+
+        double power = GunUtils.getBestPower(e.getDistance());
+        double angleInRadians = bestGun.aimAngleFunction(e, power);
+
+        double gunTurn = Utils.normalRelativeAngle(angleInRadians - bot.robot().getGunHeadingRadians());
+
+        bot.robot().setTurnGunRightRadians(gunTurn);
+
+        if (bot.robot().getGunHeat() == 0) { bot.robot().setFire(power); }
     }
 
     /*
@@ -249,12 +259,9 @@ public class GunManager extends Cannon {
 
             int total = stat.hit + stat.misses;
 
-            if (total == 0) {
-                continue;
-            }
+            if (total == 0) { continue; }
 
-            double accuracy =
-                    (double) stat.hit / total;
+            double accuracy = (double) stat.hit / total;
 
             if (accuracy > bestAccuracy) {
 
@@ -269,21 +276,16 @@ public class GunManager extends Cannon {
     public Gun getBestGunAgainst(String enemyName) {
 
         GunStats bestStats = getBestGunStats(enemyName);
-
-        if (bestStats == null) {
-            return null;
-        }
+        if (bestStats == null) { return new HeadOnGun(bot); }
 
         for (Gun gun : guns) {
-            if (gun.getName().equals(bestStats.getGunName())) {
-                return gun;
-            }
+            if (gun.getName().equals(bestStats.getGunName())) { return gun; }
         }
 
         return null;
     }
 
-    public class GunStats {
+    public static class GunStats {
 
         String gunName;
         int hit, misses;
