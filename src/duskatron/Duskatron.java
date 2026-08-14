@@ -4,8 +4,7 @@ import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.gun.Cannon;
 import duskatron.gun.GunManager;
-import duskatron.movement.HawkOnFireWheel;
-import duskatron.movement.Wheel;
+import duskatron.movement.*;
 import duskatron.radar.Radar;
 import robocode.*;
 
@@ -27,7 +26,11 @@ public class Duskatron extends AdvancedRobot {
     */
     public Radar radar =        new Radar(ctx);
     public Cannon gun =         new GunManager(ctx);
-    public Wheel wheel =        new HawkOnFireWheel(ctx);
+
+    public Wheel surfer =       new SurferWheel(ctx);
+    public Wheel anti =         new MrmWheel(ctx);
+
+    public Wheel wheel =        anti;
 
     /*
         Arena holds battlefield width and height
@@ -69,6 +72,9 @@ public class Duskatron extends AdvancedRobot {
 
         /*  Main loop  */
         while (true) {
+
+            if(getOthers() == 1) { wheel = surfer; }
+
             wheel.handleMovement();
             wheel.recordPositions();
 
@@ -78,18 +84,13 @@ public class Duskatron extends AdvancedRobot {
     }
 
     /*  Radar's method calls  */
-    public void onScannedRobot(ScannedRobotEvent e) {
-        radar.trackScannedBots(e);
-        //gun.onScannedRobot(e);
-    }
-
-    public void onRobotDeath(RobotDeathEvent e) {
-        radar.removeEnemy(e.getName());
-    }
+    public void onScannedRobot(ScannedRobotEvent e)     { radar.trackScannedBots(e); }
+    public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName()); }
+    public void onHitByBullet(HitByBulletEvent e)       { wheel.onHitByBullet(e); }
 
     public void onPaint(Graphics2D g) {
         radar.onPaint(g);
-        gun.onPaint(g);
+        if(getOthers() != 1) gun.onPaint(g);
         wheel.onPaint(g);
     }
 }

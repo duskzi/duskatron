@@ -6,6 +6,7 @@ import duskatron.context.DuskatronContext;
 import duskatron.enemy.Antigravity;
 import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
+import robocode.HitByBulletEvent;
 import robocode.util.Utils;
 
 import java.awt.*;
@@ -197,4 +198,5 @@ public class Wheel implements Constants {
     }
 
     public void onPaint(Graphics2D g) {}
+    public void onHitByBullet(HitByBulletEvent e) {}
 }
