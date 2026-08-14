@@ -15,4 +15,6 @@ public class GunUtils {
             return 1;
         }
     }
+
+    public static double getBulletSpeed(double power){ return 20.0 - (3.0 * power); }
 }

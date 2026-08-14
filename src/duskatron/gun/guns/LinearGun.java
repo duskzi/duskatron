@@ -1,15 +1,17 @@
-package duskatron.gun;
+package duskatron.gun.guns;
 
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
+import duskatron.gun.GunUtils;
+import duskatron.math.Vec2D;
 import robocode.util.Utils;
 
-public class LinearGun extends Gun implements Shooter {
+public class LinearGun extends Gun {
 
     public LinearGun(DuskatronContext ctx) { super(ctx); }
 
     /*
-        Returns an ABSOLUTE angle in radians aiming to
+        Returns an absolute angle in radians aiming to
         enemy next linear position, based on dynamic bullet power.
     */
     @Override
@@ -18,9 +20,9 @@ public class LinearGun extends Gun implements Shooter {
         double absoluteBearing = bot.robot().getHeadingRadians() + e.getBearingRadians();
 
         // Calculate the exact speed this bullet will travel
-        double bulletSpeed = 20.0 - (3.0 * bulletPower);
+        double bulletSpeed = GunUtils.getBulletSpeed(bulletPower);
 
-        /* Absolute bearing + linear lead offset using dynamic speed */
+        /*  Absolute bearing + linear offset using bullet speed  */
         double absoluteAim = absoluteBearing +
                 (e.getVelocity() * Math.sin(e.getHeadingRadians() - absoluteBearing) / bulletSpeed);
 

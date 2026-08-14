@@ -3,7 +3,6 @@ package duskatron;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.gun.Cannon;
-import duskatron.gun.Gun;
 import duskatron.gun.GunManager;
 import duskatron.movement.HawkOnFireWheel;
 import duskatron.movement.Wheel;
@@ -22,9 +21,9 @@ public class Duskatron extends AdvancedRobot {
 
     /*
         Robo-parts
-            Radar:  Manages aim
-            Gun:    Shoots when aim find something
-            Wheel:  Handles movement
+            Radar:      Manages find and storing enemy data
+            Cannon:     Choose the best enemy and how to fire it
+            Wheel:      Handles movement
     */
     public Radar radar =        new Radar(ctx);
     public Cannon gun =         new GunManager(ctx);
