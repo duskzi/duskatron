@@ -22,7 +22,7 @@ public class MrmWheel extends Wheel implements Constants {
         super(ctx);
     }
 
-    public void handleMovement() {
+    public void move() {
 
         ArrayList<Enemy> enemies = new ArrayList<>(
                 bot.radar().getScannedBots().values()
@@ -77,19 +77,6 @@ public class MrmWheel extends Wheel implements Constants {
         goTo(best.location());
     }
 
-    /*
-     * ------------------------------------------------------------------------
-     * RISK EVALUATION
-     * ------------------------------------------------------------------------
-     *
-     * Every component is normalized to approximately [0, 1].
-     *
-     * 0.0 = desirable
-     * 1.0 = dangerous
-     *
-     * The final weights therefore have an intuitive meaning.
-     */
-
     private RiskPoint evaluateRisk(
             List<Enemy> enemies,
             Vec2D destination,
@@ -115,10 +102,10 @@ public class MrmWheel extends Wheel implements Constants {
         );
 
         double totalRisk =
-                ENEMY_RISK_WEIGHT * enemyRisk
-                        /*+ CLOSEST_BOT_RISK_WEIGHT * closestBotRisk*/
-                        + WALL_RISK_WEIGHT * wallRisk
-                        + TRAIL_RISK_WEIGHT * trailRisk;
+                  ENEMY_RISK_WEIGHT * enemyRisk
+                + CLOSEST_BOT_RISK_WEIGHT * closestBotRisk
+                + WALL_RISK_WEIGHT * wallRisk
+                + TRAIL_RISK_WEIGHT * trailRisk;
 
         return new RiskPoint(
                 destination,

@@ -17,9 +17,10 @@ public class Arena {
         // this.margin = margin;
     }
 
+    /*  TODO: see if I really need margin here  */
     //public void setMargin(double margin) { this.margin = margin; }
-
     //public double getMargin() { return margin; }
+
     public double getWidth()    { return width; }
     public double getHeight()   { return height; }
     public boolean is1v1()      { return (bot.robot().getOthers() == 1); }

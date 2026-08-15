@@ -7,10 +7,8 @@ import java.util.Map;
 public class Antigravity {
 
     public static Vec2D getMovementForce(double x, double y, Map<String, Enemy> targets, long time) {
-        Vec2D enemyForce = getEnemyForce(x, y, targets);
-        Vec2D bulletForce = getBulletForce(x, y, targets, time);
 
-        return enemyForce.add(bulletForce);
+        return getEnemyForce(x, y, targets);
     }
 
     public static Vec2D getEnemyForce(double x, double y, Map<String, Enemy> targets) {
@@ -64,58 +62,6 @@ public class Antigravity {
             forceVec.x += force * awayX;
             forceVec.y += force * awayY;
         });
-
-        return forceVec;
-    }
-
-    public static Vec2D getBulletForce(double x, double y, Map<String, Enemy> targets, long time) {
-        Vec2D forceVec = new Vec2D(0.0, 0.0);
-
-        for (Enemy enemy : targets.values()) {
-            for (Bullet bullet : enemy.getBullets()) {
-                Vec2D position = bullet.getPosition(time);
-
-                double dx = x - position.x;
-                double dy = y - position.y;
-                double distance = Math.hypot(dx, dy);
-
-                if (distance > BULLET_RANGE || distance < 1.0) {
-                    continue;
-                }
-
-                // Unit vector from the bullet toward us
-                double toUsX = dx / distance;
-                double toUsY = dy / distance;
-
-                // Bullet travel direction
-                double tx = Math.sin(bullet.getHeading());
-                double ty = Math.cos(bullet.getHeading());
-
-                // How directly the bullet is heading toward us
-                double approach = toUsX * tx + toUsY * ty;
-
-                // Direction perpendicular to the bullet's path, pointing
-                // away from it (this is what lets us step sideways to dodge)
-                double perpX = toUsX - approach * tx;
-                double perpY = toUsY - approach * ty;
-                double perpLen = Math.hypot(perpX, perpY);
-
-                if (perpLen < 0.1) {
-                    // Bullet heading almost straight at us: dodge sideways
-                    perpX = -ty;
-                    perpY = tx;
-                    perpLen = 1.0;
-                }
-
-                perpX /= perpLen;
-                perpY /= perpLen;
-
-                double magnitude = BULLET_STRENGTH / (distance * distance);
-
-                forceVec.x += magnitude * (BULLET_RADIAL_WEIGHT * toUsX + BULLET_PERP_WEIGHT * perpX);
-                forceVec.y += magnitude * (BULLET_RADIAL_WEIGHT * toUsY + BULLET_PERP_WEIGHT * perpY);
-            }
-        }
 
         return forceVec;
     }

@@ -2,19 +2,68 @@ package duskatron;
 
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
-import duskatron.gun.Cannon;
-import duskatron.gun.GunManager;
-import duskatron.movement.*;
-import duskatron.radar.Radar;
+import duskatron.manager.GunManager;
+import duskatron.manager.WheelManager;
+import duskatron.manager.RadarManager;
 import robocode.*;
-
 import java.awt.*;
 
+/*
+    | `. |  | {_´´ |../  /\  ´|´ |  ) .''. |\ |
+    |_.' |..| .__} |  \ /  \  |  |  \ '..' | \|
+            a robocode bot by Dusk.
+
+    EQUIPE:         DUSKATRON
+
+    INTEGRANTE 1:   Felipe Kühl Pereira
+    INTEGRANTE 2:   n/a
+    INTEGRANTE 3:   n/a
+
+    ESCLARECIMENTO SOBRE O USO DE IA:
+
+    Durante o desenvolvimento do projeto
+    foi utilizada IA (inteligência
+    artificial) para as seguintes
+    circunstâncias:
+
+        > Limpeza de código, como:
+            Remover expressões redundantes.
+            Facilitar a procura por erros.
+
+        > Auxílio ao portar algoritmos, como:
+            Circular Targeting.
+            Ajuda na limpeza do código de
+            wave surfing.
+
+    /!\  NENHUM CÓDIGO FOI PLÁGIADO, TODAS AS
+    REFERÊNCIAS E ALGORITMOS VIERAM DE:
+
+    https://book.robocode.dev/
+        > Visão geral sobre bots e física
+        > Radar, virtual aim
+
+    https://robowiki.net/wiki/Main_Page
+        > Algoritmos avançados
+        > Estratégias avançadas
+*/
+
+/*
+    All of my code is written in English, but I'll
+    let the header in PT-BR cuz I'm not confident
+    writing important information in English.
+
+    Good classes to learn from:
+
+        Duskatron.java itself
+        Manager constants interface
+        All 3 managers
+        Enemy.java
+*/
 public class Duskatron extends AdvancedRobot {
 
     /*
-        Bot's context, it holds references to all
-        duskatron parts listed below
+        Bot's context holds references to all
+        duskatron managers listed below
     */
     DuskatronContext ctx = new DuskatronContext();
 
@@ -24,14 +73,9 @@ public class Duskatron extends AdvancedRobot {
             Cannon:     Choose the best enemy and how to fire it
             Wheel:      Handles movement
     */
-    public Radar radar =        new Radar(ctx);
-    public Cannon gun =         new GunManager(ctx);
-
-    public Wheel surfer =       new SurferWheel(ctx);
-    public Wheel anti =         new MrmWheel(ctx);
-
-    public Wheel wheel =        anti;
-
+    public RadarManager radar =     new RadarManager(ctx);
+    public GunManager gun =         new GunManager(ctx);
+    public WheelManager wheel =     new WheelManager(ctx);
     /*
         Arena holds battlefield width and height
     */
@@ -65,20 +109,15 @@ public class Duskatron extends AdvancedRobot {
         setBodyColor(Color.BLACK);
         setGunColor(Color.DARK_GRAY);
 
-        /*  Scans for all robots  */
-        radar.init();
-
         System.out.println("Arena: (" + arena.getWidth() + " " + arena.getHeight() + ")");
 
         /*  Main loop  */
         while (true) {
 
-            if(getOthers() == 1) { wheel = surfer; }
-
+            radar.handleScanning();
             wheel.handleMovement();
-            wheel.recordPositions();
-
             gun.handleGun();
+
             this.execute();
         }
     }
@@ -87,6 +126,24 @@ public class Duskatron extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent e)     { radar.trackScannedBots(e); }
     public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName()); }
     public void onHitByBullet(HitByBulletEvent e)       { wheel.onHitByBullet(e); }
+
+    /*  Larping after win  */
+    public void onWin(WinEvent event) {
+
+        while (true) {
+
+            setTurnRight(Double.POSITIVE_INFINITY);
+            setTurnGunLeft(Double.POSITIVE_INFINITY);
+            setAhead(6.7);
+
+            float hue = (getTime() * 0.2f) % 1.0f;
+            Color rainbowColor = Color.getHSBColor(hue, 1.0f, 4.0f);
+
+            setBodyColor(rainbowColor);
+
+            execute();
+        }
+    }
 
     public void onPaint(Graphics2D g) {
         radar.onPaint(g);

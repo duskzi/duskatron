@@ -29,7 +29,7 @@ public class HawkOnFireWheel extends Wheel implements Constants {
         super(ctx);
     }
 
-    public void handleMovement() {
+    public void move() {
 
         Vec2D myPos = new Vec2D(bot.robot().getX(), bot.robot().getY());
 
@@ -118,11 +118,11 @@ public class HawkOnFireWheel extends Wheel implements Constants {
     }
 
     /*
-     * Lower is better. Antigravity from each enemy, weighted by how
-     * dangerous it is (energy ratio) and how badly angled the point is
-     * relative to that enemy, plus a term that rewards distance from the
-     * last chosen destination so the bot keeps covering ground.
-     */
+        Lower is better, antigravity from each enemy, weighted by how
+        dangerous it is and how angled the point is relative to that
+        enemy, plus a term that rewards distance from the past recorded
+        positions
+    */
     private double score(
             Vec2D p,
             List<Enemy> enemies,

@@ -3,65 +3,19 @@ package duskatron.movement;
 import duskatron.Constants;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
-import duskatron.enemy.Antigravity;
-import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import robocode.HitByBulletEvent;
 import robocode.util.Utils;
-
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import static duskatron.math.AngleUtil.normalizeAngle;
 
-public class Wheel implements Constants {
+public abstract class Wheel implements Constants {
 
-    private List<Vec2D> pastPositions = new ArrayList<>();
     DuskatronContext bot;
 
-    public Wheel(DuskatronContext ctx) {
-        this.bot = ctx;
-    }
+    public Wheel(DuskatronContext ctx) { this.bot = ctx; }
 
-    public void recordPositions() {
-
-        pastPositions.add(new Vec2D(bot.robot().getX(), bot.robot().getY()));
-
-        if (pastPositions.size() > NUMBER_OF_RECORDS) { pastPositions.removeFirst(); }
-    }
-
-    public List<Vec2D> getRecordedPositions() {
-        return pastPositions;
-    }
-
-    public void handleMovement() {
-        Map<String, Enemy> scannedBots = bot.radar().getScannedBots();
-
-        Vec2D enemyForce = Antigravity.getMovementForce(
-                bot.robot().getX(),
-                bot.robot().getY(),
-                scannedBots,
-                bot.robot().getTime()
-        );
-
-        double targetAngle = Math.atan2(enemyForce.x, enemyForce.y);
-
-        double angleToTurn = normalizeAngle(
-                targetAngle - bot.robot().getHeadingRadians()
-        );
-
-        angleToTurn = smoothHeading(
-                angleToTurn,
-                bot.robot().getX(),
-                bot.robot().getY(),
-                bot.arena(),
-                MARGIN
-        );
-
-        optimalTurnAndGo(angleToTurn, 100);
-    }
+    public abstract void move();
 
     protected void goTo(Vec2D location) {
         double dx = location.x - bot.robot().getX();

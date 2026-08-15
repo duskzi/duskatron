@@ -1,7 +1,9 @@
-package duskatron.gun;
+package duskatron.manager;
 
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
+import duskatron.gun.GunUtils;
+import duskatron.gun.VirtualBullet;
 import duskatron.gun.guns.CircularGun;
 import duskatron.gun.guns.Gun;
 import duskatron.gun.guns.HeadOnGun;
@@ -17,10 +19,7 @@ import java.util.Map;
 
 import static duskatron.gun.GunUtils.getBestPower;
 
-public class GunManager extends Cannon {
-
-    private static final double ROBOT_RADIUS =          18.0;
-    private static final double MISS_DISTANCE_MARGIN =  60.0;
+public class GunManager implements ManagerConstants {
 
     private final DuskatronContext bot;
 

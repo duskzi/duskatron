@@ -14,9 +14,6 @@ public class Enemy {
     private double bearing, distance, energy, heading, velocity;
     private long lastScanTime;
 
-    private final List<Bullet> bullets = new ArrayList<>();
-    private boolean scanned = false;
-
     public void update(ScannedRobotEvent e, Robot me) {
         this.name =         e.getName();
         this.bearing =      e.getBearing();
@@ -24,7 +21,6 @@ public class Enemy {
         this.heading =      e.getHeading();
         this.velocity =     e.getVelocity();
 
-        double previousEnergy = this.energy;
         this.energy =       e.getEnergy();
 
         double absoluteBearing =    Math.toRadians(me.getHeading() + e.getBearing());
@@ -32,39 +28,10 @@ public class Enemy {
         this.y =                    me.getY() + Math.cos(absoluteBearing) * e.getDistance();
 
         this.lastScanTime = me.getTime();
-
-        detectBulletFire(previousEnergy, me);
-        pruneBullets(me.getTime());
     }
 
-    private void detectBulletFire(double previousEnergy, Robot me) {
-        if (!scanned) {
-            scanned = true;
-            return;
-        }
-
-        double energyDrop = previousEnergy - energy;
-
-        // A fired bullet costs the enemy its power (0.1 .. 3.0).
-        // We assume they aimed at us, which is accurate enough for dodging.
-        if (energyDrop >= 0.1 && energyDrop <= 3.0) {
-            double bulletHeading = Math.atan2(me.getX() - x, me.getY() - y);
-
-            bullets.add(new Bullet(
-                    new Vec2D(x, y),
-                    bulletHeading,
-                    energyDrop,
-                    me.getTime()
-            ));
-        }
-    }
-
-    private void pruneBullets(long time) {
-        bullets.removeIf(bullet -> !bullet.isAlive(time));
-    }
-
-    public void reset()             { this.name = ""; }
-    public boolean exists()         { return !this.name.isEmpty(); }
+    public void reset()                     { this.name = ""; }
+    public boolean exists()                 { return !this.name.isEmpty(); }
 
     /*  Getters  */
     public Vec2D getPosition()              { return new Vec2D(x, y); }
@@ -79,5 +46,4 @@ public class Enemy {
     public double getHeadingRadians()       { return Math.toRadians(heading); }
     public double getBearingRadians()       { return Math.toRadians(bearing); }
     public long getLastScanTime()           { return lastScanTime; }
-    public List<Bullet> getBullets()        { return bullets; }
 }

@@ -35,7 +35,7 @@ public class SurferWheel extends Wheel implements Constants {
     // indicating a bullet is fired
     private double oppEnergy = 100.0;
 
-    // This is a rectangle that represents the battle field, used for a
+    // This is a rectangle that represents the battlefield, used for a
     // simple, iterative WallSmoothing method (by Kawigi).
     public static Rectangle2D.Double fieldRect
             = new java.awt.geom.Rectangle2D.Double(18, 18, 764, 564);
@@ -45,7 +45,7 @@ public class SurferWheel extends Wheel implements Constants {
         super(ctx);
     }
 
-    public void handleMovement() {
+    public void move() {
 
         // keep the wall smoothing rectangle in sync with the real arena
         fieldRect = new Rectangle2D.Double(
@@ -81,7 +81,7 @@ public class SurferWheel extends Wheel implements Constants {
         if (bulletPower < 3.01 && bulletPower > 0.09
                 && surfDirections.size() > 2) {
             EnemyWave ew = new EnemyWave();
-            ew.fireTime = bot.robot().getTime() - 1;
+            ew.fireTime = bot.robot().getTime();
             ew.bulletVelocity = bulletVelocity(bulletPower);
             ew.distanceTraveled = bulletVelocity(bulletPower);
             ew.direction = surfDirections.get(2);
