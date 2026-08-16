@@ -30,21 +30,17 @@ public class CircularGun extends Gun {
 
     /*
         Returns an absolute angle in radians aiming to
-        the enemy's predicted position using circular targeting.
+        the enemy's predicted position using circular targeting
 
-        Circular targeting assumes the enemy will:
-          - keep its current velocity
-          - keep turning at approximately its most recent
-            angular velocity
+        Circular targeting assumes the enemy will keep its current
+        velocity and keep turning at approximately its most recent
+        angular velocity
     */
     @Override
     public double aimAngleFunction(Enemy e, double bulletPower) {
 
-        double absoluteBearing =
-                bot.robot().getHeadingRadians() + e.getBearingRadians();
-
+        double absoluteBearing = bot.robot().getHeadingRadians() + e.getBearingRadians();
         double bulletSpeed = GunUtils.getBulletSpeed(bulletPower);
-
         long currentTime = bot.robot().getTime();
 
         String enemyName = e.getName();
@@ -63,8 +59,7 @@ public class CircularGun extends Gun {
             if (deltaTime > 0) {
                 double headingDelta =
                         Utils.normalRelativeAngle(
-                                e.getHeadingRadians() - previous.heading
-                        );
+                                e.getHeadingRadians() - previous.heading);
 
                 turnRate = headingDelta / deltaTime;
 
@@ -182,7 +177,6 @@ public class CircularGun extends Gun {
         return Utils.normalAbsoluteAngle(absoluteAim);
     }
 
-    @Override
     public String getName() {
         return "Circular Gun";
     }

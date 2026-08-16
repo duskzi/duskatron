@@ -15,11 +15,11 @@ import static java.lang.Math.*;
     HawkOnFireWheel
 
     Based on HawkOnFire rozu's movement adapted to Duskatron wheel
-    architecture (see: https://robowiki.net/wiki/HawkOnFire/)
+    architecture, see: https://robowiki.net/wiki/HawkOnFire/
 
     Movement samples random points within a search radius, scores each
     with a cheap antigravity evaluation.
- */
+*/
 public class HawkOnFireWheel extends Wheel implements Constants {
 
     private Vec2D nextDestination;
@@ -29,6 +29,7 @@ public class HawkOnFireWheel extends Wheel implements Constants {
         super(ctx);
     }
 
+    @Override
     public void move() {
 
         Vec2D myPos = new Vec2D(bot.robot().getX(), bot.robot().getY());
@@ -60,21 +61,19 @@ public class HawkOnFireWheel extends Wheel implements Constants {
     }
 
     /*
-     * Samples random points around the current position and keeps the
-     * lowest-scoring one that lands inside the arena margin.
-     */
+        Samples random points around the current
+        position and choose the low-risk one to
+        move to
+    */
     private Vec2D pickDestination(
             List<Enemy> enemies,
             Vec2D myPos,
             double distanceToTarget
     ) {
         double myEnergy = bot.robot().getEnergy();
-        double margin = HOF_WALL_MARGIN;
 
-        double minX = margin;
-        double minY = margin;
-        double maxX = bot.arena().getWidth() - margin;
-        double maxY = bot.arena().getHeight() - margin;
+        double maxX = bot.arena().getWidth() - HOF_WALL_MARGIN;
+        double maxY = bot.arena().getHeight() - HOF_WALL_MARGIN;
 
         int liveEnemies = 0;
         for (Enemy enemy : enemies) {
@@ -83,12 +82,13 @@ public class HawkOnFireWheel extends Wheel implements Constants {
             }
         }
 
-        /*  Fancy math that I don't understand  */
+        /*  Fancy math that makes rozu's bot so goated  */
         double addLast = 1 - rint(pow(Math.random(), max(liveEnemies, 1)));
 
         Vec2D best = nextDestination;
         double bestScore = score(best, enemies, myPos, myEnergy, addLast);
 
+        /*  Search and score for the best candidate  */
         for (int i = 0; i < HOF_SEARCH_ATTEMPTS; i++) {
             double searchDist = min(
                     distanceToTarget * 0.8,
@@ -101,8 +101,8 @@ public class HawkOnFireWheel extends Wheel implements Constants {
                     myPos.y + searchDist * cos(angle)
             );
 
-            if (candidate.x < minX || candidate.x > maxX
-                    || candidate.y < minY || candidate.y > maxY) {
+            if (candidate.x < HOF_WALL_MARGIN || candidate.x > maxX
+                    || candidate.y < HOF_WALL_MARGIN || candidate.y > maxY) {
                 continue;
             }
 
@@ -123,13 +123,9 @@ public class HawkOnFireWheel extends Wheel implements Constants {
         enemy, plus a term that rewards distance from the past recorded
         positions
     */
-    private double score(
-            Vec2D p,
-            List<Enemy> enemies,
-            Vec2D myPos,
-            double myEnergy,
-            double addLast
-    ) {
+    private double score(Vec2D p, List<Enemy> enemies,
+        Vec2D myPos,double myEnergy, double addLast) {
+
         double s = addLast * 0.08 / p.distanceSq(lastDestination);
 
         for (Enemy enemy : enemies) {
@@ -151,9 +147,8 @@ public class HawkOnFireWheel extends Wheel implements Constants {
 
     /*
         Turns and moves toward the destination, flipping into reverse when
-        the target is behind us so we never need more than a 90-degree turn.
-        This is what keeps HawkOnFire from wasting ticks spinning in place.
-     */
+        the target is behind us so we never need more than a 90-degree turn
+    */
     private void moveTowards(Vec2D myPos, double distanceToDestination) {
         double heading = bot.robot().getHeadingRadians();
         double angle = atan2(nextDestination.x - myPos.x, nextDestination.y - myPos.y) - heading;

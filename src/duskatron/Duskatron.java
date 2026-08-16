@@ -9,8 +9,8 @@ import robocode.*;
 import java.awt.*;
 
 /*
-    | `. |  | {_´´ |../  /\  ´|´ |  ) .''. |\ |
-    |_.' |..| .__} |  \ /  \  |  |  \ '..' | \|
+    |`'. |  | {_´´ |../  /\  "|" |  ) .''. |\ |   [_ `\=-='
+    |_.' |..| .__} |  \ /  \  |  |  \ '..' | \|   (.....)
             a robocode bot by Dusk.
 
     EQUIPE:         DUSKATRON
@@ -50,11 +50,12 @@ import java.awt.*;
 /*
     All of my code is written in English, but I'll
     let the header in PT-BR cuz I'm not confident
-    writing important information in English.
+    writing important info in English.
 
     Good classes to learn from:
 
-        Duskatron.java itself
+        DuskatronContext.java
+        Duskatron.java
         Manager constants interface
         All 3 managers
         Enemy.java
@@ -109,20 +110,26 @@ public class Duskatron extends AdvancedRobot {
         setBodyColor(Color.BLACK);
         setGunColor(Color.DARK_GRAY);
 
-        System.out.println("Arena: (" + arena.getWidth() + " " + arena.getHeight() + ")");
+        /*  Debug  */
+        System.out.println("Summary:");
+        System.out.println("    Arena: (" +
+                arena.getWidth() + " " +
+                arena.getHeight() + ")");
+
+        System.out.println("    Total Bots: " + getOthers());
 
         /*  Main loop  */
-        while (true) {
+        for (;;) {
 
             radar.handleScanning();
             wheel.handleMovement();
             gun.handleGun();
 
-            this.execute();
+            execute();
         }
     }
 
-    /*  Radar's method calls  */
+    /*  Components method calls  */
     public void onScannedRobot(ScannedRobotEvent e)     { radar.trackScannedBots(e); }
     public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName()); }
     public void onHitByBullet(HitByBulletEvent e)       { wheel.onHitByBullet(e); }
@@ -130,7 +137,7 @@ public class Duskatron extends AdvancedRobot {
     /*  Larping after win  */
     public void onWin(WinEvent event) {
 
-        while (true) {
+        for(;;) {
 
             setTurnRight(Double.POSITIVE_INFINITY);
             setTurnGunLeft(Double.POSITIVE_INFINITY);
@@ -142,6 +149,7 @@ public class Duskatron extends AdvancedRobot {
             setBodyColor(rainbowColor);
 
             execute();
+
         }
     }
 

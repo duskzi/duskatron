@@ -8,7 +8,12 @@ import robocode.HitByBulletEvent;
 import robocode.util.Utils;
 import java.awt.*;
 import static duskatron.math.AngleUtil.normalizeAngle;
+import static java.lang.Math.*;
 
+/*
+    Wheel have some utils methods to help subclasses
+    implementing it
+*/
 public abstract class Wheel implements Constants {
 
     DuskatronContext bot;
@@ -24,14 +29,10 @@ public abstract class Wheel implements Constants {
         double angleToTarget = Math.atan2(dx, dy);
         double turnAngle = Utils.normalRelativeAngle(angleToTarget - bot.robot().getHeadingRadians());
 
-        // Folding into [-90°, 90°] via atan(tan(...)) means "facing away" is handled
-        // by driving backward instead of doing a near-180° turn.
         double turnRadians = Math.atan(Math.tan(turnAngle));
         bot.robot().setTurnRightRadians(turnRadians);
 
         double distance = Math.hypot(dx, dy);
-        // Scaling by cos(turnAngle) kills forward motion while still turning hard,
-        // and ramps it back up as heading converges — no lurch, no overshoot spikes.
         bot.robot().setAhead(Math.cos(turnAngle) * distance);
     }
 
@@ -58,11 +59,9 @@ public abstract class Wheel implements Constants {
             double x,
             double y,
             Arena arena,
-            double margin
-    ) {
+            double margin) {
 
-        final double angleStep = Math.toRadians(2.0);
-
+        final double angleStep = toRadians(WALL_SMOOTH_ANGLE_STEP);
         double heading = bot.robot().getHeadingRadians();
 
         if (isSafeAtOffset(
@@ -71,15 +70,12 @@ public abstract class Wheel implements Constants {
                 y,
                 heading,
                 arena,
-                margin,
-                LOOK_AHEAD_DIST
-        )) {
-            return desiredAngle;
-        }
+                margin
+        )) { return desiredAngle; }
 
-        for (int i = 1; i <= 90; i++) {
+        for (int i = 1; i <= WALL_SMOOTH_MAX_STEPS; i++) {
+
             double offset = angleStep * i;
-
             double left = desiredAngle - offset;
 
             if (isSafeAtOffset(
@@ -88,11 +84,8 @@ public abstract class Wheel implements Constants {
                     y,
                     heading,
                     arena,
-                    margin,
-                    LOOK_AHEAD_DIST
-            )) {
-                return left;
-            }
+                    margin
+            )) { return left; }
 
             double right = desiredAngle + offset;
 
@@ -102,27 +95,13 @@ public abstract class Wheel implements Constants {
                     y,
                     heading,
                     arena,
-                    margin,
-                    LOOK_AHEAD_DIST
-            )) {
+                    margin)) {
+
                 return right;
             }
         }
 
         return desiredAngle;
-    }
-
-    public boolean isInsideSafeRect(
-            double x,
-            double y,
-            double width,
-            double height,
-            double margin
-    ) {
-        return margin <= x
-                && x <= width - margin
-                && margin <= y
-                && y <= height - margin;
     }
 
     private boolean isSafeAtOffset(
@@ -131,16 +110,11 @@ public abstract class Wheel implements Constants {
             double y,
             double currentHeading,
             Arena arena,
-            double margin,
-            double lookAhead
-    ) {
+            double margin) {
+
         double absoluteHeading = currentHeading + offset;
-
-        double projectedX =
-                x + lookAhead * Math.sin(absoluteHeading);
-
-        double projectedY =
-                y + lookAhead * Math.cos(absoluteHeading);
+        double projectedX = x + LOOK_AHEAD_DIST * sin(absoluteHeading);
+        double projectedY = y + LOOK_AHEAD_DIST * cos(absoluteHeading);
 
         return isInsideSafeRect(
                 projectedX,
@@ -150,6 +124,18 @@ public abstract class Wheel implements Constants {
                 margin
         );
     }
+
+    public boolean isInsideSafeRect(
+            double x,
+            double y,
+            double width,
+            double height,
+            double margin) {
+
+        return margin <= x
+                && x <= width - margin
+                && margin <= y
+                && y <= height - margin;}
 
     public void onPaint(Graphics2D g) {}
     public void onHitByBullet(HitByBulletEvent e) {}

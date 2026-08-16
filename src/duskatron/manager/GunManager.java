@@ -170,9 +170,7 @@ public class GunManager implements ManagerConstants {
         }
     }
 
-    /*
-        Checks if each enemy has it own guns stats
-    */
+    /*  Checks if each enemy has it own guns stats  */
     private void ensureGunStats(Enemy enemy) {
 
         List<GunStats> stats = enemyGunStats.computeIfAbsent(enemy.getName(), _ -> new ArrayList<>());
@@ -184,23 +182,16 @@ public class GunManager implements ManagerConstants {
             if (!alreadyExists) {
 
                 GunStats gunStats = new GunStats(gun.getName());
-
                 stats.add(gunStats);
             }
         }
     }
 
-    private void registerHit(
-            String enemyName,
-            String gunName
-    ) {
+    private void registerHit(String enemyName, String gunName) {
 
-        List<GunStats> stats =
-                enemyGunStats.get(enemyName);
+        List<GunStats> stats = enemyGunStats.get(enemyName);
 
-        if (stats == null) {
-            return;
-        }
+        if (stats == null) { return; }
 
         for (GunStats stat : stats) {
 
@@ -211,17 +202,11 @@ public class GunManager implements ManagerConstants {
         }
     }
 
-    private void registerMiss(
-            String enemyName,
-            String gunName
-    ) {
+    private void registerMiss(String enemyName, String gunName) {
 
-        List<GunStats> stats =
-                enemyGunStats.get(enemyName);
+        List<GunStats> stats = enemyGunStats.get(enemyName);
 
-        if (stats == null) {
-            return;
-        }
+        if (stats == null) { return; }
 
         for (GunStats stat : stats) {
 
@@ -232,16 +217,12 @@ public class GunManager implements ManagerConstants {
         }
     }
 
-    /**
-     * Returns the statistics for an enemy.
-     */
+    /*  Returns the statistics for an enemy  */
     public List<GunStats> getGunStats(String enemyName) {
         return enemyGunStats.get(enemyName);
     }
 
-    /**
-     * Returns the best-performing gun against an enemy.
-     */
+    /*  Returns the best-performing gun against an enemy  */
     public GunStats getBestGunStats(String enemyName) {
 
         List<GunStats> stats =
@@ -316,9 +297,7 @@ public class GunManager implements ManagerConstants {
 
         long currentTime = bot.robot().getTime();
 
-        /*
-         * Virtual bullets
-         */
+        /*  Virtual bullets  */
         for (VirtualBullet bullet : bullets) {
 
             double speed = GunUtils.getBulletSpeed(bullet.getPower());

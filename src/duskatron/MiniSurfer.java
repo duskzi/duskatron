@@ -5,17 +5,19 @@ import robocode.util.Utils;
 import java.awt.geom.*;     // for Point2D's
 import java.lang.*;         // for Double and Integer objects
 import java.util.ArrayList; // for collection of waves
+import java.util.List;
 
 public class MiniSurfer extends AdvancedRobot {
 
     public static int BINS = 47;
     public static double _surfStats[] = new double[BINS]; // we'll use 47 bins
+
     public Point2D.Double _myLocation;     // our bot's location
     public Point2D.Double _enemyLocation;  // enemy bot's location
 
-    public ArrayList _enemyWaves;
-    public ArrayList _surfDirections;
-    public ArrayList _surfAbsBearings;
+    public ArrayList<EnemyWave> enemyWaves;
+    public ArrayList<Integer> _surfDirections;
+    public ArrayList<Double> _surfAbsBearings;
 
     // We must keep track of the enemy's energy level to detect EnergyDrop,
     // indicating a bullet is fired
@@ -26,22 +28,13 @@ public class MiniSurfer extends AdvancedRobot {
     // If you're not familiar with WallSmoothing, the wall stick indicates
     // the amount of space we try to always have on either end of the tank
     // (extending straight out the front or back) before touching a wall.
-    public static Rectangle2D.Double _fieldRect
-            = new java.awt.geom.Rectangle2D.Double(18, 18, 764, 564);
+    public static Rectangle2D.Double _fieldRect = new java.awt.geom.Rectangle2D.Double(18, 18, 764, 564);
     public static double WALL_STICK = 160;
 
     public void run() {
-        _enemyWaves = new ArrayList();
+        enemyWaves = new ArrayList();
         _surfDirections = new ArrayList();
         _surfAbsBearings = new ArrayList();
-
-        setAdjustGunForRobotTurn(true);
-        setAdjustRadarForGunTurn(true);
-
-        do {
-            // basic mini-radar code
-            turnRadarRightRadians(Double.POSITIVE_INFINITY);
-        } while (true);
     }
 
     public void onScannedRobot(ScannedRobotEvent e) {
@@ -68,7 +61,7 @@ public class MiniSurfer extends AdvancedRobot {
             ew.directAngle = ((Double)_surfAbsBearings.get(2)).doubleValue();
             ew.fireLocation = (Point2D.Double)_enemyLocation.clone(); // last tick
 
-            _enemyWaves.add(ew);
+            enemyWaves.add(ew);
         }
 
         _oppEnergy = e.getEnergy();
@@ -84,13 +77,13 @@ public class MiniSurfer extends AdvancedRobot {
     }
 
     public void updateWaves() {
-        for (int x = 0; x < _enemyWaves.size(); x++) {
-            EnemyWave ew = (EnemyWave)_enemyWaves.get(x);
+        for (int x = 0; x < enemyWaves.size(); x++) {
+            EnemyWave ew = (EnemyWave)enemyWaves.get(x);
 
             ew.distanceTraveled = (getTime() - ew.fireTime) * ew.bulletVelocity;
             if (ew.distanceTraveled >
                     _myLocation.distance(ew.fireLocation) + 50) {
-                _enemyWaves.remove(x);
+                enemyWaves.remove(x);
                 x--;
             }
         }
@@ -100,8 +93,8 @@ public class MiniSurfer extends AdvancedRobot {
         double closestDistance = 50000; // I juse use some very big number here
         EnemyWave surfWave = null;
 
-        for (int x = 0; x < _enemyWaves.size(); x++) {
-            EnemyWave ew = (EnemyWave)_enemyWaves.get(x);
+        for (int x = 0; x < enemyWaves.size(); x++) {
+            EnemyWave ew = (EnemyWave)enemyWaves.get(x);
             double distance = _myLocation.distance(ew.fireLocation)
                     - ew.distanceTraveled;
 
@@ -141,16 +134,16 @@ public class MiniSurfer extends AdvancedRobot {
     }
 
     public void onHitByBullet(HitByBulletEvent e) {
-        // If the _enemyWaves collection is empty, we must have missed the
+        // If the enemyWaves collection is empty, we must have missed the
         // detection of this wave somehow.
-        if (!_enemyWaves.isEmpty()) {
+        if (!enemyWaves.isEmpty()) {
             Point2D.Double hitBulletLocation = new Point2D.Double(
                     e.getBullet().getX(), e.getBullet().getY());
             EnemyWave hitWave = null;
 
             // look through the EnemyWaves, and find one that could've hit us.
-            for (int x = 0; x < _enemyWaves.size(); x++) {
-                EnemyWave ew = (EnemyWave)_enemyWaves.get(x);
+            for (int x = 0; x < enemyWaves.size(); x++) {
+                EnemyWave ew = (EnemyWave)enemyWaves.get(x);
 
                 if (Math.abs(ew.distanceTraveled -
                         _myLocation.distance(ew.fireLocation)) < 50
@@ -165,7 +158,7 @@ public class MiniSurfer extends AdvancedRobot {
                 logHit(hitWave, hitBulletLocation);
 
                 // We can remove this wave now, of course.
-                _enemyWaves.remove(_enemyWaves.lastIndexOf(hitWave));
+                enemyWaves.remove(enemyWaves.lastIndexOf(hitWave));
             }
         }
     }
@@ -314,8 +307,8 @@ public class MiniSurfer extends AdvancedRobot {
 
     public void onPaint(java.awt.Graphics2D g) {
         g.setColor(java.awt.Color.red);
-        for(int i = 0; i < _enemyWaves.size(); i++){
-            EnemyWave w = (EnemyWave)(_enemyWaves.get(i));
+        for(int i = 0; i < enemyWaves.size(); i++){
+            EnemyWave w = (EnemyWave)(enemyWaves.get(i));
             Point2D.Double center = w.fireLocation;
 
             //int radius = (int)(w.distanceTraveled + w.bulletVelocity);

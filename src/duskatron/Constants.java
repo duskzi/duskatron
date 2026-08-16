@@ -62,8 +62,9 @@ public interface Constants {
 
 
     /*
-        Antigravity Wheel
+        Surfer Wheel
     */
-    double ENEMY_STRENGTH =         50.0;
-    double ENERGY_WEIGHT_MIN =      0.25;
+    double WALL_STICK =                 160;
+    double SURF_SMOOTHING_MARGIN =      18;
+    int BINS =                          47;
 }

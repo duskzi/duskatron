@@ -4,14 +4,11 @@ import duskatron.math.Vec2D;
 import robocode.ScannedRobotEvent;
 import robocode.Robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Enemy {
 
     private String name;
     private double x, y;
-    private double bearing, distance, energy, heading, velocity;
+    private double bearing, distance, energy, heading, velocity, bulletPower;
     private long lastScanTime;
 
     public void update(ScannedRobotEvent e, Robot me) {
@@ -21,6 +18,7 @@ public class Enemy {
         this.heading =      e.getHeading();
         this.velocity =     e.getVelocity();
 
+        this.bulletPower =  this.energy - e.getEnergy();
         this.energy =       e.getEnergy();
 
         double absoluteBearing =    Math.toRadians(me.getHeading() + e.getBearing());
@@ -33,8 +31,11 @@ public class Enemy {
     public void reset()                     { this.name = ""; }
     public boolean exists()                 { return !this.name.isEmpty(); }
 
+    public boolean hasShoot()               { return bulletPower < 3.01 && bulletPower > 0.09; }
+    public double getBulletPower()          { return bulletPower; }
+
     /*  Getters  */
-    public Vec2D getPosition()              { return new Vec2D(x, y); }
+    public Vec2D  getPosition()             { return new Vec2D(x, y); }
     public String getName()                 { return name; }
     public double getX()                    { return x; }
     public double getY()                    { return y; }
@@ -45,5 +46,5 @@ public class Enemy {
     public double getBearing()              { return bearing; }
     public double getHeadingRadians()       { return Math.toRadians(heading); }
     public double getBearingRadians()       { return Math.toRadians(bearing); }
-    public long getLastScanTime()           { return lastScanTime; }
+    public long   getLastScanTime()         { return lastScanTime; }
 }
