@@ -29,12 +29,12 @@ public class DuskatronContext {
         Bot bot = new Bot(...);
         gun.bind(bot);
     */
-    public void bindParts(AdvancedRobot robot, RadarManager radar, GunManager gun, WheelManager wheel, Arena arena) {
-        this.robot = robot;
-        this.radar = radar;
+    public void bindRobot(AdvancedRobot robot)  { this.robot = robot; }
+    public void bindArena(Arena arena)          { this.arena = arena; }
+    public void bindManagers(GunManager gun, WheelManager wheel, RadarManager radar) {
         this.gun = gun;
         this.wheel = wheel;
-        this.arena = arena;
+        this.radar = radar;
     }
 
     public AdvancedRobot robot()            { return robot; }

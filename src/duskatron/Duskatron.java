@@ -8,58 +8,6 @@ import duskatron.manager.RadarManager;
 import robocode.*;
 import java.awt.*;
 
-/*
-    |`'. |  | {_´´ |../  /\  "|" |  ) .''. |\ |   [_ `\=-='
-    |_.' |..| .__} |  \ /  \  |  |  \ '..' | \|   (.....)
-            a robocode bot by Dusk.
-
-    EQUIPE:         DUSKATRON
-
-    INTEGRANTE 1:   Felipe Kühl Pereira
-    INTEGRANTE 2:   n/a
-    INTEGRANTE 3:   n/a
-
-    ESCLARECIMENTO SOBRE O USO DE IA:
-
-    Durante o desenvolvimento do projeto
-    foi utilizada IA (inteligência
-    artificial) para as seguintes
-    circunstâncias:
-
-        > Limpeza de código, como:
-            Remover expressões redundantes.
-            Facilitar a procura por erros.
-
-        > Auxílio ao portar algoritmos, como:
-            Circular Targeting.
-            Ajuda na limpeza do código de
-            wave surfing.
-
-    /!\  NENHUM CÓDIGO FOI PLÁGIADO, TODAS AS
-    REFERÊNCIAS E ALGORITMOS VIERAM DE:
-
-    https://book.robocode.dev/
-        > Visão geral sobre bots e física
-        > Radar, virtual aim
-
-    https://robowiki.net/wiki/Main_Page
-        > Algoritmos avançados
-        > Estratégias avançadas
-*/
-
-/*
-    All of my code is written in English, but I'll
-    let the header in PT-BR cuz I'm not confident
-    writing important info in English.
-
-    Good classes to learn from:
-
-        DuskatronContext.java
-        Duskatron.java
-        Manager constants interface
-        All 3 managers
-        Enemy.java
-*/
 public class Duskatron extends AdvancedRobot {
 
     /*
@@ -74,9 +22,9 @@ public class Duskatron extends AdvancedRobot {
             Cannon:     Choose the best enemy and how to fire it
             Wheel:      Handles movement
     */
-    public RadarManager radar =     new RadarManager(ctx);
-    public GunManager gun =         new GunManager(ctx);
-    public WheelManager wheel =     new WheelManager(ctx);
+    public RadarManager radar;
+    public GunManager gun;
+    public WheelManager wheel;
     /*
         Arena holds battlefield width and height
     */
@@ -95,7 +43,14 @@ public class Duskatron extends AdvancedRobot {
             context to be used later inside
             each part
         */
-        ctx.bindParts(this, radar, gun, wheel, arena);
+        ctx.bindRobot(this);
+        ctx.bindArena(arena);
+
+        radar =         new RadarManager(ctx);
+        gun =           new GunManager(ctx);
+        wheel =         new WheelManager(ctx);
+
+        ctx.bindManagers(gun, wheel, radar);
 
         /*
             Allows radar and gun to rotate
@@ -141,10 +96,9 @@ public class Duskatron extends AdvancedRobot {
 
             setTurnRight(Double.POSITIVE_INFINITY);
             setTurnGunLeft(Double.POSITIVE_INFINITY);
-            setAhead(6.7);
 
             float hue = (getTime() * 0.2f) % 1.0f;
-            Color rainbowColor = Color.getHSBColor(hue, 1.0f, 4.0f);
+            Color rainbowColor = Color.getHSBColor(hue, 0.67f, 0.67f);
 
             setBodyColor(rainbowColor);
 

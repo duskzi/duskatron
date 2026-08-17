@@ -1,12 +1,11 @@
 package duskatron;
 
 /*
-    +-----------------------------------------------+
+    .-----------------------------------------------.
     |    GLOBAL CONSTANTS                           |
     |    Change them, tune them, erase them         |
     |    They're all explained here, good luck!     |
-    |                                               |
-    +-----------------------------------------------+
+    '_______________________________________________'
 */
 public interface Constants {
 

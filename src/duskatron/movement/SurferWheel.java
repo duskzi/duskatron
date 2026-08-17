@@ -72,7 +72,7 @@ public class SurferWheel extends Wheel implements Constants {
         if (enemy.hasShoot() && surfDirections.size() > 2) {
             EnemyWave ew =          new EnemyWave();
             ew.bulletVelocity =     GunUtils.getBulletSpeed(enemy.getBulletPower());
-            ew.fireTime =           bot.robot().getTime() - 2;  /*  Subtract 2 ticks to correct the radius of the wave  */
+            ew.fireTime =           bot.robot().getTime() - 1;  /*  Subtract 1 ticks to correct the radius of the wave  */
             ew.distanceTraveled =   2 * ew.bulletVelocity;      /*  Same here  */
             ew.direction =          surfDirections.get(2);
             ew.directAngle =        surfAbsBearings.get(2);
