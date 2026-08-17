@@ -6,7 +6,9 @@ import duskatron.context.DuskatronContext;
 import duskatron.math.Vec2D;
 import robocode.HitByBulletEvent;
 import robocode.util.Utils;
+
 import java.awt.*;
+
 import static duskatron.math.AngleUtil.normalizeAngle;
 import static java.lang.Math.*;
 

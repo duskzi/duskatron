@@ -1,8 +1,8 @@
 package duskatron.enemy;
 
 import duskatron.math.Vec2D;
-import robocode.ScannedRobotEvent;
 import robocode.Robot;
+import robocode.ScannedRobotEvent;
 
 public class Enemy {
 

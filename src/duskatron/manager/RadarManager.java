@@ -5,6 +5,7 @@ import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
+
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;

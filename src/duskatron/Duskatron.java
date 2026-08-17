@@ -3,9 +3,10 @@ package duskatron;
 import duskatron.arena.Arena;
 import duskatron.context.DuskatronContext;
 import duskatron.manager.GunManager;
-import duskatron.manager.WheelManager;
 import duskatron.manager.RadarManager;
+import duskatron.manager.WheelManager;
 import robocode.*;
+
 import java.awt.*;
 
 public class Duskatron extends AdvancedRobot {

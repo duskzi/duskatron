@@ -2,8 +2,6 @@ package duskatron.gun.guns;
 
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
-import duskatron.gun.GunUtils;
-import duskatron.math.Vec2D;
 import robocode.util.Utils;
 
 public class HeadOnGun extends Gun {

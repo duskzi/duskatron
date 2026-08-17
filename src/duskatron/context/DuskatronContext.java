@@ -2,8 +2,8 @@ package duskatron.context;
 
 import duskatron.arena.Arena;
 import duskatron.manager.GunManager;
-import duskatron.manager.WheelManager;
 import duskatron.manager.RadarManager;
+import duskatron.manager.WheelManager;
 import robocode.AdvancedRobot;
 
 public class DuskatronContext {

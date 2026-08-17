@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from datetime import datetime
 import re
 import sys
+import time
 
+PACKAGE_NAME = "duskatron"
+MAIN_CLASS = "Duskatron"
 
 PACKAGE_RE = re.compile(r"^\s*package\s+[^;]+;\s*$")
-
-IMPORT_RE = re.compile(
-    r"^\s*import\s+(static\s+)?([^;]+);\s*$"
-)
-
+IMPORT_RE = re.compile(r"^\s*import\s+(static\s+)?([^;]+);\s*$")
 PUBLIC_TYPE_RE = re.compile(
     r"^(\s*)public\s+"
     r"((?:(?:abstract|final|sealed|non-sealed)\s+)*)"
@@ -34,14 +34,6 @@ def replace_static_calls(text: str, static_methods: dict[str, str]) -> str:
     """
 
     for method, owner in static_methods.items():
-        # Don't replace:
-        #
-        #     GunUtils.getBestPower(...)
-        #
-        # with:
-        #
-        #     GunUtils.GunUtils.getBestPower(...)
-        #
         pattern = rf"(?<![\w$.]){re.escape(method)}\s*\("
 
         text = re.sub(
@@ -69,6 +61,7 @@ def process_file(path: Path):
     for line in path.read_text(encoding="utf-8").splitlines():
 
         # Remove package declarations.
+        # The merged file gets a single package declaration.
         if PACKAGE_RE.match(line):
             continue
 
@@ -81,12 +74,6 @@ def process_file(path: Path):
             # Internal Duskatron imports no longer exist after flattening.
             if imported.startswith("duskatron."):
                 if is_static:
-                    # Example:
-                    #
-                    # import static duskatron.gun.GunUtils.getBestPower;
-                    #
-                    # imported =
-                    # duskatron.gun.GunUtils.getBestPower
                     parts = imported.split(".")
 
                     method = parts[-1]
@@ -112,7 +99,7 @@ def process_file(path: Path):
 
 def remove_public_from_non_main_types(
     lines: list[str],
-    main_class: str = "Duskatron",
+    main_class: str = MAIN_CLASS,
 ) -> list[str]:
 
     result = []
@@ -152,6 +139,9 @@ def remove_public_from_non_main_types(
 
 
 def merge_java_files(root: Path, output: Path):
+    merge_started = time.perf_counter()
+    start_datetime = datetime.now()
+
     files = sorted(
         path
         for path in root.rglob("*.java")
@@ -191,11 +181,27 @@ def merge_java_files(root: Path, output: Path):
             relative = file.relative_to(root)
 
             sections.append(
-                f"// ===== {relative} =====\n\n"
+                f"/* ---- {relative} ---- */\n\n"
                 f"{text}"
             )
 
+    # Measure the actual merge/write operation.
     with output.open("w", encoding="utf-8") as out:
+
+        # Keep the package declaration at the very top.
+        out.write(f"package {PACKAGE_NAME};\n\n")
+
+        # Metadata.
+        out.write("/*\n")
+        out.write("    .-------------------------.\n")
+        out.write("    | Duskatron Merge Utility |\n")
+        out.write("    '-------------------------'\n\n")
+        out.write(f"    Script: {Path(__file__).name}\n")
+        out.write(f"    Package: {PACKAGE_NAME}\n")
+        out.write(f"    Main class: {MAIN_CLASS}\n")
+        out.write(f"    Files merged: {len(files)}\n")
+        out.write(f"    Source directory: {root}\n")
+        out.write("*/\n\n")
 
         # Imports must appear before every type.
         for imp in sorted(all_external_imports):
@@ -210,9 +216,36 @@ def merge_java_files(root: Path, output: Path):
 
         out.write("\n")
 
-    print(
-        f"Merged {len(files)} files into {output}"
+    merge_duration = time.perf_counter() - merge_started
+    end_datetime = datetime.now()
+
+    # Replace the temporary metadata with the real duration.
+    content = output.read_text(encoding="utf-8")
+
+    content = content.replace(
+        "// Merge duration: calculated after merge",
+        f"// Merge duration: {merge_duration:.6f} seconds",
     )
+
+    content = content.replace(
+        "// Merge started: "
+        f"{start_datetime.strftime('%Y-%m-%d %H:%M:%S')}",
+        "// Merge started: "
+        f"{start_datetime.strftime('%Y-%m-%d %H:%M:%S')}",
+    )
+
+    # Add the exact completion timestamp.
+    content = content.replace(
+        f"// Merge duration: {merge_duration:.6f} seconds",
+        f"// Merge duration: {merge_duration:.6f} seconds\n"
+        f"// Merge finished: "
+        f"{end_datetime.strftime('%Y-%m-%d %H:%M:%S')}",
+    )
+
+    output.write_text(content, encoding="utf-8")
+
+    print(f"Merged {len(files)} files into {output}")
+    print(f"Merge time: {merge_duration:.6f} seconds")
 
 
 def main():

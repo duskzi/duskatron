@@ -65,4 +65,4 @@ package duskatron;
 */
 
 /*  Just empty to get header message at the top when merging  */
-public interface A { }
+public interface Advertise { }

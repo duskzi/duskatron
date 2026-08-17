@@ -1,6 +1,18 @@
+package duskatron;
+
+/*
+    .-------------------------.
+    | Duskatron Merge Utility |
+    '-------------------------'
+
+    Script: merge.py
+    Package: duskatron
+    Main class: Duskatron
+    Files merged: 22
+    Source directory: C:\Users\20260131\IdeaProjects\duskatron\src\duskatron
+*/
+
 import java.awt.*;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -16,7 +28,7 @@ import robocode.util.Utils;
 import static java.lang.Math.*;
 
 
-// ===== A.java =====
+/* ---- Advertise.java ---- */
 
 /*
     |`'. |  | {_´´ |../  /\  "|" |  ) .''. |\ |   [_ `\=-='
@@ -83,10 +95,39 @@ import static java.lang.Math.*;
 */
 
 /*  Just empty to get header message at the top when merging  */
-interface A { }
+interface Advertise { }
 
 
-// ===== Constants.java =====
+/* ---- arena\Arena.java ---- */
+
+class Arena {
+
+    private final double width;
+    private final double height;
+    private DuskatronContext bot;
+    // private double margin;
+
+    public Arena(DuskatronContext ctx, double w, double h){
+        this.width = w;
+        this.height = h;
+        this.bot = ctx;
+        // this.margin = margin;
+    }
+
+    /*  TODO: see if I really need margin here  */
+    //public void setMargin(double margin) { this.margin = margin; }
+    //public double getMargin() { return margin; }
+
+    public double getWidth()    { return width; }
+    public double getHeight()   { return height; }
+    public boolean is1v1()      { return (bot.robot().getOthers() == 1); }
+    public boolean isInsideArena(Vec2D pos) {
+        return (0.0 < pos.x && pos.x < width) && (0.0 < pos.y && pos.y < height);
+    }
+}
+
+
+/* ---- Constants.java ---- */
 
 /*
     .-----------------------------------------------.
@@ -157,7 +198,48 @@ interface Constants {
 }
 
 
-// ===== Duskatron.java =====
+/* ---- context\DuskatronContext.java ---- */
+
+class DuskatronContext {
+
+    private GunManager        gun;        /*  Gun part  */
+    private RadarManager      radar;      /*  Radar part  */
+    private WheelManager      wheel;      /*  Wheel part  */
+    private Arena             arena;      /*  Battlefield arena  */
+    private AdvancedRobot     robot;      /*  Duskatron itself  */
+
+    public DuskatronContext() {}
+
+    /*
+        Bind parts after instancing them to not fall into circular
+        dependency, ex.:
+
+        Bot need Gun in its constructor    Bot bot = new Bot(gun);
+        Gun need Bot in its constructor    Gun gun = new Gun(bot);
+
+        So after instancing Bot, we bind it passing to a method
+        after initialization:
+
+        Bot bot = new Bot(...);
+        gun.bind(bot);
+    */
+    public void bindRobot(AdvancedRobot robot)  { this.robot = robot; }
+    public void bindArena(Arena arena)          { this.arena = arena; }
+    public void bindManagers(GunManager gun, WheelManager wheel, RadarManager radar) {
+        this.gun = gun;
+        this.wheel = wheel;
+        this.radar = radar;
+    }
+
+    public AdvancedRobot robot()            { return robot; }
+    public GunManager gun()                 { return gun; }
+    public RadarManager radar()             { return radar; }
+    public WheelManager wheel()             { return wheel; }
+    public Arena arena()                    { return arena; }
+}
+
+
+/* ---- Duskatron.java ---- */
 
 public class Duskatron extends AdvancedRobot {
 
@@ -266,77 +348,7 @@ public class Duskatron extends AdvancedRobot {
 }
 
 
-// ===== arena/Arena.java =====
-
-class Arena {
-
-    private final double width;
-    private final double height;
-    private DuskatronContext bot;
-    // private double margin;
-
-    public Arena(DuskatronContext ctx, double w, double h){
-        this.width = w;
-        this.height = h;
-        this.bot = ctx;
-        // this.margin = margin;
-    }
-
-    /*  TODO: see if I really need margin here  */
-    //public void setMargin(double margin) { this.margin = margin; }
-    //public double getMargin() { return margin; }
-
-    public double getWidth()    { return width; }
-    public double getHeight()   { return height; }
-    public boolean is1v1()      { return (bot.robot().getOthers() == 1); }
-    public boolean isInsideArena(Vec2D pos) {
-        return (0.0 < pos.x && pos.x < width) && (0.0 < pos.y && pos.y < height);
-    }
-}
-
-
-// ===== context/DuskatronContext.java =====
-
-class DuskatronContext {
-
-    private GunManager        gun;        /*  Gun part  */
-    private RadarManager      radar;      /*  Radar part  */
-    private WheelManager      wheel;      /*  Wheel part  */
-    private Arena             arena;      /*  Battlefield arena  */
-    private AdvancedRobot     robot;      /*  Duskatron itself  */
-
-    public DuskatronContext() {}
-
-    /*
-        Bind parts after instancing them to not fall into circular
-        dependency, ex.:
-
-        Bot need Gun in its constructor    Bot bot = new Bot(gun);
-        Gun need Bot in its constructor    Gun gun = new Gun(bot);
-
-        So after instancing Bot, we bind it passing to a method
-        after initialization:
-
-        Bot bot = new Bot(...);
-        gun.bind(bot);
-    */
-    public void bindRobot(AdvancedRobot robot)  { this.robot = robot; }
-    public void bindArena(Arena arena)          { this.arena = arena; }
-    public void bindManagers(GunManager gun, WheelManager wheel, RadarManager radar) {
-        this.gun = gun;
-        this.wheel = wheel;
-        this.radar = radar;
-    }
-
-    public AdvancedRobot robot()            { return robot; }
-    public GunManager gun()                 { return gun; }
-    public RadarManager radar()             { return radar; }
-    public WheelManager wheel()             { return wheel; }
-    public Arena arena()                    { return arena; }
-}
-
-
-// ===== enemy/Enemy.java =====
+/* ---- enemy\Enemy.java ---- */
 
 class Enemy {
 
@@ -384,60 +396,7 @@ class Enemy {
 }
 
 
-// ===== gun/GunUtils.java =====
-
-class GunUtils {
-
-    public static double getBestPower(double distance) {
-        if (distance < 50) {
-            return 3;
-        } else if (distance < 250) {
-            return 2.5;
-        } else if (distance < 350) {
-            return 2;
-        } else if (distance < 400) {
-            return 1.5;
-        } else {
-            return 1;
-        }
-    }
-
-    public static double getBulletSpeed(double power){ return 20.0 - (3.0 * power); }
-}
-
-
-// ===== gun/VirtualBullet.java =====
-
-class VirtualBullet {
-
-    public VirtualBullet(String enemy, String gun, Vec2D initialPos, double power, double angle, long timeWhenFired) {
-        this.enemy = enemy;
-        this.gun = gun;
-        this.initialPos = initialPos;
-        this.power = power;
-        this.angle = angle;                     /*  Radians  */
-        this.timeWhenFired = timeWhenFired;
-    }
-
-    String enemy;
-    String gun;
-
-    Vec2D initialPos;
-
-    double power;
-    double angle;    /*  Radians  */
-    long timeWhenFired;
-
-    public String getTargetName()   { return this.enemy; }
-    public String getGunName()      { return gun; }
-    public Vec2D getOrigin()        { return initialPos; }
-    public double getPower()        { return power; }
-    public double getAngle()        { return angle; }
-    public long getFireTime()       { return timeWhenFired; }
-}
-
-
-// ===== gun/guns/CircularGun.java =====
+/* ---- gun\guns\CircularGun.java ---- */
 
 class CircularGun extends Gun {
 
@@ -475,40 +434,30 @@ class CircularGun extends Gun {
         long currentTime = bot.robot().getTime();
 
         String enemyName = e.getName();
-
         EnemyState previous = enemyStates.get(enemyName);
 
-        /*
-         * Default to straight-line movement when we don't have
-         * enough history to calculate a turn rate.
-         */
+        /*  Default movement when we don't have enough history to calculate a turn rate  */
         double turnRate = 0.0;
 
         if (previous != null) {
             long deltaTime = currentTime - previous.time;
 
             if (deltaTime > 0) {
-                double headingDelta =
-                        Utils.normalRelativeAngle(
+                double headingDelta = Utils.normalRelativeAngle(
                                 e.getHeadingRadians() - previous.heading);
 
                 turnRate = headingDelta / deltaTime;
 
                 /*
-                 * Limit turn rate to a reasonable Robocode value.
-                 * A robot can turn up to 10 degrees/tick while moving
-                 * at low velocity.
-                 */
+                    A robot can turn up to 10 degrees/tick while moving
+                    at low velocity
+                */
                 double maxTurnRate = Math.toRadians(10);
-
-                turnRate = Math.clamp(turnRate,
-                        -maxTurnRate, maxTurnRate);
+                turnRate = Math.clamp(turnRate, -maxTurnRate, maxTurnRate);
             }
         }
 
-        /*
-         * Save the current state for the next scan.
-         */
+        /*  Save the current state for the next scan  */
         enemyStates.put(
                 enemyName,
                 new EnemyState(
@@ -518,27 +467,15 @@ class CircularGun extends Gun {
                 )
         );
 
-        /*
-         * Current enemy position.
-         */
-        double enemyX =
-                bot.robot().getX()
-                        + Math.sin(absoluteBearing) * e.getDistance();
+        /*  Current enemy position  */
+        double enemyX = bot.robot().getX()
+                + Math.sin(absoluteBearing) * e.getDistance();
+        double enemyY = bot.robot().getY()
+                + Math.cos(absoluteBearing) * e.getDistance();
 
-        double enemyY =
-                bot.robot().getY()
-                        + Math.cos(absoluteBearing) * e.getDistance();
-
-        /*
-         * Current enemy heading.
-         */
+        /*  Current enemy heading  */
         double enemyHeading = e.getHeadingRadians();
 
-        /*
-         * Estimate how many ticks the bullet needs to reach
-         * the enemy. Recalculate the enemy position during the
-         * simulation because its heading is changing.
-         */
         double predictedX = enemyX;
         double predictedY = enemyY;
 
@@ -553,56 +490,32 @@ class CircularGun extends Gun {
 
             double travelTime = distance / bulletSpeed;
 
-            /*
-             * Stop when our simulation has reached approximately
-             * the bullet's arrival time.
-             */
+
             if (ticks >= travelTime) {
                 break;
             }
 
-            /*
-             * Circular movement:
-             *
-             * heading += turnRate
-             *
-             * Robocode coordinates:
-             *   sin(heading) -> X
-             *   cos(heading) -> Y
-             */
             enemyHeading += turnRate;
 
-            predictedX +=
-                    Math.sin(enemyHeading) * e.getVelocity();
+            predictedX += Math.sin(enemyHeading) * e.getVelocity();
+            predictedY += Math.cos(enemyHeading) * e.getVelocity();
 
-            predictedY +=
-                    Math.cos(enemyHeading) * e.getVelocity();
 
-            /*
-             * Keep prediction inside the battlefield.
-             */
             predictedX = Math.clamp(
-                    predictedX
-                    ,
+                    predictedX,
                     18.0,
                     bot.robot().getBattleFieldWidth() - 18.0);
 
             predictedY = Math.clamp(
-                    predictedY
-                    ,
+                    predictedY,
                     18.0,
                     bot.robot().getBattleFieldHeight() - 18.0);
 
             ticks++;
         }
 
-        /*
-         * Calculate the absolute bearing from our robot to the
-         * predicted enemy position.
-         */
         double dx = predictedX - bot.robot().getX();
         double dy = predictedY - bot.robot().getY();
-
         double absoluteAim = Math.atan2(dx, dy);
 
         return Utils.normalAbsoluteAngle(absoluteAim);
@@ -614,7 +527,7 @@ class CircularGun extends Gun {
 }
 
 
-// ===== gun/guns/Gun.java =====
+/* ---- gun\guns\Gun.java ---- */
 
 abstract class Gun {
 
@@ -629,7 +542,7 @@ abstract class Gun {
 }
 
 
-// ===== gun/guns/HeadOnGun.java =====
+/* ---- gun\guns\HeadOnGun.java ---- */
 
 class HeadOnGun extends Gun {
 
@@ -652,7 +565,7 @@ class HeadOnGun extends Gun {
 }
 
 
-// ===== gun/guns/LinearGun.java =====
+/* ---- gun\guns\LinearGun.java ---- */
 
 class LinearGun extends Gun {
 
@@ -684,7 +597,60 @@ class LinearGun extends Gun {
 }
 
 
-// ===== manager/GunManager.java =====
+/* ---- gun\GunUtils.java ---- */
+
+class GunUtils {
+
+    public static double getBestPower(double distance) {
+        if (distance < 50) {
+            return 3;
+        } else if (distance < 250) {
+            return 2.5;
+        } else if (distance < 350) {
+            return 2;
+        } else if (distance < 400) {
+            return 1.5;
+        } else {
+            return 1;
+        }
+    }
+
+    public static double getBulletSpeed(double power){ return 20.0 - (3.0 * power); }
+}
+
+
+/* ---- gun\VirtualBullet.java ---- */
+
+class VirtualBullet {
+
+    public VirtualBullet(String enemy, String gun, Vec2D initialPos, double power, double angle, long timeWhenFired) {
+        this.enemy = enemy;
+        this.gun = gun;
+        this.initialPos = initialPos;
+        this.power = power;
+        this.angle = angle;                     /*  Radians  */
+        this.timeWhenFired = timeWhenFired;
+    }
+
+    String enemy;
+    String gun;
+
+    Vec2D initialPos;
+
+    double power;
+    double angle;    /*  Radians  */
+    long timeWhenFired;
+
+    public String getTargetName()   { return this.enemy; }
+    public String getGunName()      { return gun; }
+    public Vec2D getOrigin()        { return initialPos; }
+    public double getPower()        { return power; }
+    public double getAngle()        { return angle; }
+    public long getFireTime()       { return timeWhenFired; }
+}
+
+
+/* ---- manager\GunManager.java ---- */
 
 class GunManager implements ManagerConstants {
 
@@ -1074,7 +1040,7 @@ class GunManager implements ManagerConstants {
 }
 
 
-// ===== manager/ManagerConstants.java =====
+/* ---- manager\ManagerConstants.java ---- */
 
 interface ManagerConstants {
 
@@ -1098,7 +1064,7 @@ interface ManagerConstants {
 }
 
 
-// ===== manager/RadarManager.java =====
+/* ---- manager\RadarManager.java ---- */
 
 class RadarManager implements ManagerConstants {
 
@@ -1267,7 +1233,7 @@ class RadarManager implements ManagerConstants {
 }
 
 
-// ===== manager/WheelManager.java =====
+/* ---- manager\WheelManager.java ---- */
 
 class WheelManager implements ManagerConstants {
 
@@ -1319,7 +1285,7 @@ class WheelManager implements ManagerConstants {
 }
 
 
-// ===== math/AngleUtil.java =====
+/* ---- math\AngleUtil.java ---- */
 
 class AngleUtil {
     public static double normalizeAngle(double angle) {
@@ -1336,7 +1302,7 @@ class AngleUtil {
 }
 
 
-// ===== math/Vec2D.java =====
+/* ---- math\Vec2D.java ---- */
 
 class Vec2D {
     public double x, y;
@@ -1359,7 +1325,7 @@ class Vec2D {
 }
 
 
-// ===== movement/HawkOnFireWheel.java =====
+/* ---- movement\HawkOnFireWheel.java ---- */
 
 /*
     HawkOnFireWheel
@@ -1518,7 +1484,7 @@ class HawkOnFireWheel extends Wheel implements Constants {
 }
 
 
-// ===== movement/MrmWheel.java =====
+/* ---- movement\MrmWheel.java ---- */
 
 /*
     Minimum Risk Movement Wheel
@@ -1874,7 +1840,7 @@ class MrmWheel extends Wheel implements Constants {
 }
 
 
-// ===== movement/SurferWheel.java =====
+/* ---- movement\SurferWheel.java ---- */
 
 /*
     SurferWheel
@@ -2192,7 +2158,7 @@ class EnemyWave {
 }
 
 
-// ===== movement/Wheel.java =====
+/* ---- movement\Wheel.java ---- */
 
 /*
     Wheel have some utils methods to help subclasses
