@@ -17,8 +17,6 @@ public class LinearGun extends Gun {
     public double aimAngleFunction(Enemy e, double bulletPower) {
 
         double absoluteBearing = bot.robot().getHeadingRadians() + e.getBearingRadians();
-
-        // Calculate the exact speed this bullet will travel
         double bulletSpeed = GunUtils.getBulletSpeed(bulletPower);
 
         /*  Absolute bearing + linear offset using bullet speed  */

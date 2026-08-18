@@ -6,7 +6,6 @@ import duskatron.manager.GunManager;
 import duskatron.manager.RadarManager;
 import duskatron.manager.WheelManager;
 import robocode.*;
-
 import java.awt.*;
 
 public class Duskatron extends AdvancedRobot {
