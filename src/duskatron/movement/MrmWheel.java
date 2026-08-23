@@ -44,15 +44,13 @@ public class MrmWheel extends Wheel implements Constants {
                 PI / 2 =        east
             */
             double angle = (PI * 2.0) * i / MRM_POINT_COUNT;
-            double RANDOM_OFFSET = 50;
 
             double randomX  = (Math.random() * (RANDOM_OFFSET * 2.0)) - RANDOM_OFFSET;
             double randomY  = (Math.random() * (RANDOM_OFFSET * 2.0)) - RANDOM_OFFSET;
 
             Vec2D destination = new Vec2D(
                     robotX + sin(angle) * MRM_DISTANCE + randomX,
-                    robotY + cos(angle) * MRM_DISTANCE + randomY
-            );
+                    robotY + cos(angle) * MRM_DISTANCE + randomY);
 
             points.add(evaluateRisk(enemies, destination, angle));
         }
@@ -101,9 +99,9 @@ public class MrmWheel extends Wheel implements Constants {
     /*
         Enemy risk combines:
 
-        - distance
-        - perpendicularity
-        - enemy energy
+        * distance
+        * perpendicularity
+        * enemy energy
 
         Individual enemy risks are combined
         into a bounded [0, 1] value
@@ -158,10 +156,8 @@ public class MrmWheel extends Wheel implements Constants {
         int threatenedEnemies = 0;
 
         for (Enemy enemy : enemies) {
-            if (!enemy.exists()) {
-                continue;
-            }
 
+            if (!enemy.exists()) { continue; }
             validEnemies++;
 
             double ourDistanceSq = destination.distanceSq(enemy.getPosition());
@@ -169,9 +165,8 @@ public class MrmWheel extends Wheel implements Constants {
             boolean weAreClosest = true;
 
             for (Enemy other : enemies) {
-                if (!other.exists() || other == enemy) {
-                    continue;
-                }
+
+                if (!other.exists() || other == enemy) { continue; }
 
                 double otherDistanceSq = other.getPosition().distanceSq(enemy.getPosition());
 
@@ -183,7 +178,7 @@ public class MrmWheel extends Wheel implements Constants {
 
             if (weAreClosest) { threatenedEnemies++; }
         }
-        if (validEnemies == 0) { return 0.0;}
+        if (validEnemies == 0) { return 0.0; }
 
         return (double) threatenedEnemies / validEnemies;
     }

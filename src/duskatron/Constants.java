@@ -9,6 +9,10 @@ package duskatron;
 */
 public interface Constants {
 
+    /*
+
+    */
+
     /*  Wall smoothing  */
     double MARGIN =                     30.0;
     double LOOK_AHEAD_DIST =            140.0;
@@ -27,6 +31,7 @@ public interface Constants {
     */
     int MRM_POINT_COUNT =               32;         /*  How many points to use when sampling  */
     double MRM_DISTANCE =               100.0;      /*  How far risk points are sampled from the bot  */
+    double RANDOM_OFFSET =              50;         /*  How far randomly offset from MRM_DISTANCE  */
     double WALL_MARGIN =                40.0;       /*  Desired distance from arena walls  */
     /*
         MRM wall smoothing

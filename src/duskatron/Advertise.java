@@ -2,7 +2,7 @@ package duskatron;
 
 /*
     |`'. |  | {_´´ |../  /\  "|" |  ) .''. |\ |   [_ `\=-='
-    |_.' |..| .__} |  \ /  \  |  |  \ '..' | \|   (.....)
+    |_.' |..| '..} |  \ /  \  |  |  \ '..' | \|   (.....)
             a robocode bot by Dusk.
 
     EQUIPE:         DUSKATRON
@@ -48,20 +48,23 @@ package duskatron;
     https://robowiki.net/wiki/Main_Page
         > Algoritmos avançados
         > Estratégias avançadas
+        > Bots para testar contra
 */
 
 /*
     All of my code is written in English, but I'll
     let the header in PT-BR cuz I'm not confident
-    writing important info in English.
+    writing important stuff in English.
 
     Good classes to learn from:
 
-        DuskatronContext.java
-        Duskatron.java
-        Manager constants interface
-        All 3 managers
-        Enemy.java
+        | Class                         | Description
+
+        DuskatronContext.java           Holds all bot's parts
+        Duskatron.java                  Main class
+        Manager constants interface     All configs/consts
+        All 3 managers                  Entire bot logic
+        Enemy.java                      All info about enemy
 */
 
 /*  Just empty to get header message at the top when merging  */

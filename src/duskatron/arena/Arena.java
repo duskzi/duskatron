@@ -21,9 +21,11 @@ public class Arena {
     //public void setMargin(double margin) { this.margin = margin; }
     //public double getMargin() { return margin; }
 
-    public double getWidth()    { return width; }
-    public double getHeight()   { return height; }
-    public boolean is1v1()      { return (bot.robot().getOthers() == 1); }
+    public double getWidth()                    { return width; }
+    public double getHeight()                   { return height; }
+    public boolean is1v1()                      { return (bot.robot().getOthers() == 1); }
+    public boolean isOutsideArena(Vec2D pos)    { return !isInsideArena(pos); }
+
     public boolean isInsideArena(Vec2D pos) {
         return (0.0 < pos.x && pos.x < width) && (0.0 < pos.y && pos.y < height);
     }

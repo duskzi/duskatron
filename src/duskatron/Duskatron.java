@@ -86,9 +86,9 @@ public class Duskatron extends AdvancedRobot {
 
     /*  Components method calls  */
     public void onScannedRobot(ScannedRobotEvent e)     { radar.trackScannedBots(e); }
-    public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName()); }
     public void onHitByBullet(HitByBulletEvent e)       { wheel.onHitByBullet(e); }
-
+    public void onRobotDeath(RobotDeathEvent e)         { radar.removeEnemy(e.getName());
+                                                          gun.checkLostShots(e); }
     /*  Larping after win  */
     public void onWin(WinEvent event) {
 
@@ -109,7 +109,7 @@ public class Duskatron extends AdvancedRobot {
 
     public void onPaint(Graphics2D g) {
         radar.onPaint(g);
-        if(getOthers() != 1) gun.onPaint(g);
+        gun.onPaint(g);
         wheel.onPaint(g);
     }
 }

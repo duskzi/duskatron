@@ -9,6 +9,7 @@ import duskatron.gun.guns.Gun;
 import duskatron.gun.guns.HeadOnGun;
 import duskatron.gun.guns.LinearGun;
 import duskatron.math.Vec2D;
+import robocode.RobotDeathEvent;
 import robocode.util.Utils;
 
 import java.awt.*;
@@ -53,11 +54,9 @@ public class GunManager implements ManagerConstants {
 
         Map<String, Enemy> targets = bot.radar().getScannedBots();
 
+        /*  No enemy nothing to aim/shoot at, so skip  */
         Enemy e = bot.radar().getClosestEnemy();
-
-        if (bot.robot().getTime() % 4 == 0) {
-            testVirtualAim(e);
-        }
+        if (e == null) { return; }
 
         /*
             Make sure every scanned enemy has a GunStats
@@ -65,52 +64,60 @@ public class GunManager implements ManagerConstants {
         */
         for (Enemy enemy : targets.values()) { ensureGunStats(enemy); }
 
-        checkForVirtualBulletsCollisions();
+        double power =  GunUtils.getBestPower(e.getDistance(), bot.robot().getEnergy());
+        long time =     bot.robot().getTime();
 
-        /*  No enemy -> nothing to aim/shoot at, so skip  */
-        if (e == null) { return; }
-
+        /*  Choose the best gun for the current enemy  */
         Gun bestGun = getBestGunAgainst(e.getName());
 
-        double power = GunUtils.getBestPower(e.getDistance());
-        double angleInRadians = bestGun.aimAngleFunction(e, power);
+        if (time % VIRTUAL_AIM_DELAY == 0) {
+
+            for (Gun gun : guns) {
+                gun.updateAimStatus(e, power);
+                createVirtualBullet(gun, e, power);
+            }
+
+        } else {
+
+            bestGun.updateAimStatus(e, power);
+        }
+
+        /*  Check for virtual bullets hits or misses  */
+        checkForVirtualBulletsCollisions();
+
+        double angleInRadians = bestGun.aimstatus.getAngle();
+
+        if(bestGun.aimstatus.isOutside()) {
+            /*  Using Head-On  */
+            angleInRadians = guns.getFirst().aimstatus.getAngle();
+        }
 
         double gunTurn = Utils.normalRelativeAngle(angleInRadians - bot.robot().getGunHeadingRadians());
-
         bot.robot().setTurnGunRightRadians(gunTurn);
 
-        if (bot.robot().getGunHeat() == 0) { bot.robot().setFire(power); }
+        /*  Only shoot when pointing to enemy and heat is 0  */
+        if (Math.abs(gunTurn) < Math.toRadians(1.0) && bot.robot().getGunHeat() == 0) {
+
+            bot.robot().setFire(power);
+        }
     }
 
-    /*
-        Creates one virtual bullet for every gun
-    */
-    public void testVirtualAim(Enemy enemy) {
+    /*  Creates one virtual bullet  */
+    public void createVirtualBullet(Gun gun, Enemy enemy, double power) {
 
-        if (enemy == null) {
-            return;
-        }
+        double angle = gun.aimstatus.getAngle();
 
-        double power = getBestPower(enemy.getDistance());
-
-        for (Gun gun : guns) {
-
-            double angle = gun.aimAngleFunction(enemy, power);
-
-            bullets.add(
-                    new VirtualBullet(
-                            enemy.getName(),
-                            gun.getName(),
-                            new Vec2D(
-                                    bot.robot().getX(),
-                                    bot.robot().getY()
-                            ),
-                            power,
-                            angle,
-                            bot.robot().getTime()
-                    )
-            );
-        }
+        bullets.add(
+                new VirtualBullet(
+                        enemy.getName(),
+                        gun.getName(),
+                        new Vec2D(
+                                bot.robot().getX(),
+                                bot.robot().getY()
+                        ),
+                        power,
+                        angle,
+                        bot.robot().getTime()));
     }
 
     /*
@@ -128,15 +135,10 @@ public class GunManager implements ManagerConstants {
 
             VirtualBullet bullet = bullets.get(i);
 
-            Enemy enemy =
-                    bot.radar()
-                            .getScannedBots()
-                            .get(bullet.getTargetName());
-
+            Enemy enemy = bot.radar().getScannedBots().get(bullet.getTargetName());
 
             /*  Skip if it doesn't exist  */
             if (enemy == null) { continue; }
-
 
             double speed = GunUtils.getBulletSpeed(bullet.getPower());
             double travelTime = currentTime - bullet.getFireTime();
@@ -167,6 +169,22 @@ public class GunManager implements ManagerConstants {
                 registerMiss(bullet.getTargetName(), bullet.getGunName());
                 bullets.remove(i);
             }
+        }
+    }
+
+
+    /*
+        Checks every virtual bullet to see if its
+        target no longer exists
+    */
+    public void checkLostShots(RobotDeathEvent e) {
+
+        String enemyName = e.getName();
+
+        for (int i = bullets.size() - 1; i >= 0; i--) {
+
+            VirtualBullet bullet = bullets.get(i);
+            if (enemyName.equals(bullet.getTargetName())) { bullets.remove(i); }
         }
     }
 

@@ -1,8 +1,13 @@
 package duskatron.gun;
 
-public class GunUtils {
+import duskatron.manager.ManagerConstants;
 
-    public static double getBestPower(double distance) {
+public class GunUtils implements ManagerConstants {
+
+    public static double getBestPower(double distance, double life) {
+
+        double lifeFactor = life / MAX_LIFE;
+
         if (distance < 50) {
             return 3;
         } else if (distance < 250) {

@@ -8,10 +8,11 @@ import java.awt.*;
 public abstract class Gun {
 
     DuskatronContext bot;
+    public AimStatus aimstatus;
 
-    public Gun(DuskatronContext ctx) { this.bot = ctx; }
+    public Gun(DuskatronContext ctx) { this.bot = ctx; this.aimstatus = new AimStatus(); }
 
-    public abstract double aimAngleFunction(Enemy e, double bulletPower);
+    public abstract void updateAimStatus(Enemy e, double bulletPower);
     public abstract String getName();
 
     public void onPaint(Graphics2D g) {};

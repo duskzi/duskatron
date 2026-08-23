@@ -12,10 +12,12 @@ public class HeadOnGun extends Gun {
         Returns the angle pointing directly to the enemy
     */
     @Override
-    public double aimAngleFunction(Enemy e, double bulletPower) {
+    public void updateAimStatus(Enemy e, double bulletPower) {
 
+        this.aimstatus.setOutside(false);
         double absoluteBearing = bot.robot().getHeadingRadians() + e.getBearingRadians();
-        return Utils.normalAbsoluteAngle(absoluteBearing);
+
+        this.aimstatus.setAngle(Utils.normalAbsoluteAngle(absoluteBearing));
     }
 
     @Override

@@ -3,6 +3,7 @@ package duskatron.gun.guns;
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
 import duskatron.gun.GunUtils;
+import duskatron.math.Vec2D;
 import robocode.util.Utils;
 
 public class LinearGun extends Gun {
@@ -14,16 +15,40 @@ public class LinearGun extends Gun {
         enemy next linear position, based on dynamic bullet power.
     */
     @Override
-    public double aimAngleFunction(Enemy e, double bulletPower) {
+    public void updateAimStatus(Enemy e, double bulletPower) {
 
-        double absoluteBearing = bot.robot().getHeadingRadians() + e.getBearingRadians();
+        Vec2D enemyPos = new Vec2D(e.getPosition().x, e.getPosition().y);
+        Vec2D robotPos = new Vec2D(bot.robot().getX(), bot.robot().getY());
+
+        double enemyHeading = e.getHeadingRadians();
+        double enemyVelocity = e.getVelocity();
+
         double bulletSpeed = GunUtils.getBulletSpeed(bulletPower);
 
-        /*  Absolute bearing + linear offset using bullet speed  */
-        double absoluteAim = absoluteBearing +
-                (e.getVelocity() * Math.sin(e.getHeadingRadians() - absoluteBearing) / bulletSpeed);
+        this.aimstatus.setOutside(false);
 
-        return Utils.normalAbsoluteAngle(absoluteAim);
+        for (int tick = 1; tick < 100; tick++) {
+
+            enemyPos.x += Math.sin(enemyHeading) * enemyVelocity;
+            enemyPos.y += Math.cos(enemyHeading) * enemyVelocity;
+
+            if (bot.arena().isOutsideArena(enemyPos)) {
+                this.aimstatus.setOutside(true);
+                break;
+            }
+
+            double distance = enemyPos.distance(robotPos);
+            double bulletDistance = tick * bulletSpeed;
+
+            if (bulletDistance >= distance) {
+                break;
+            }
+        }
+
+        double dx = enemyPos.x - robotPos.x;
+        double dy = enemyPos.y - robotPos.y;
+
+        this.aimstatus.setAngle(Utils.normalAbsoluteAngle(Math.atan2(dx, dy)));
     }
 
     @Override
