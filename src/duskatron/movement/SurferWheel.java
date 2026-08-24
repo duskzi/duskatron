@@ -58,8 +58,8 @@ public class SurferWheel extends Wheel implements Constants {
         Enemy enemy = bot.radar().getClosestEnemy();
 
         /*  Nothing scanned, skip until we find someone  */
-        if (enemy == null || !enemy.exists()) { return; }
-        if (enemy.getLastScanTime() != bot.robot().getTime()) { return; }
+        if (enemy == null || !enemy.exists())                   { return; }
+        if (enemy.getLastScanTime() != bot.robot().getTime())   { return; }
 
         myLocation = new Point2D.Double(bot.robot().getX(), bot.robot().getY());
 
@@ -81,8 +81,10 @@ public class SurferWheel extends Wheel implements Constants {
             enemyWaves.add(ew);
         }
 
-        // update after EnemyWave detection, because that needs the previous
-        // enemy location as the source of the wave
+        /*
+            Update after EnemyWave detection, because that needs
+            the previous enemy location as the source of the wave
+        */
         enemyLocation = project(myLocation, absBearing, enemy.getDistance());
 
         updateWaves();

@@ -71,14 +71,11 @@ public class GunManager implements ManagerConstants {
         Gun bestGun = getBestGunAgainst(e.getName());
 
         if (time % VIRTUAL_AIM_DELAY == 0) {
-
             for (Gun gun : guns) {
                 gun.updateAimStatus(e, power);
                 createVirtualBullet(gun, e, power);
             }
-
         } else {
-
             bestGun.updateAimStatus(e, power);
         }
 

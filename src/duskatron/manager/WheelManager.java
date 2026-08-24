@@ -2,6 +2,7 @@ package duskatron.manager;
 
 import duskatron.context.DuskatronContext;
 import duskatron.math.Vec2D;
+import duskatron.movement.HawkOnFireWheel;
 import duskatron.movement.MrmWheel;
 import duskatron.movement.SurferWheel;
 import duskatron.movement.Wheel;
@@ -17,6 +18,7 @@ public class WheelManager implements ManagerConstants {
     DuskatronContext bot;
 
     private final Wheel surfer;
+    private final Wheel HOF;
     private final Wheel MRM;
 
     private Wheel wheel;
@@ -25,6 +27,7 @@ public class WheelManager implements ManagerConstants {
 
         this.bot =      ctx;
         this.MRM =      new MrmWheel(ctx);
+        this.HOF =      new HawkOnFireWheel(ctx);
         this.surfer =   new SurferWheel(ctx);
 
         /*  Using MRM at first  */

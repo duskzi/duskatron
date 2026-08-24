@@ -43,17 +43,17 @@ public interface Constants {
     /*
         Risk priorities
 
-            60% enemy danger
-            10% being the closest target
-            15% walls
-            15% avoiding our own recent path
+            * Enemy danger
+            * Being the closest target
+            * Walls
+            * Avoid your own recent path
 
         Yeah, I know it sucks being in floating
         decimals but make sense for me
     */
-    double ENEMY_RISK_WEIGHT =          0.60;
-    double CLOSEST_BOT_RISK_WEIGHT =    0.10;
-    double WALL_RISK_WEIGHT =           0.15;
+    double ENEMY_RISK_WEIGHT =          0.35;
+    double CLOSEST_BOT_RISK_WEIGHT =    0.30;
+    double WALL_RISK_WEIGHT =           0.20;
     double TRAIL_RISK_WEIGHT =          0.15;
 
     /*
@@ -61,9 +61,9 @@ public interface Constants {
         this is a physical distance, not a mysterious multiplier
     */
     double ENEMY_DISTANCE_SCALE =       140.0;
-    double TRAIL_DISTANCE_SCALE =       80.0;       /*  Positions farther than this have almost no trail penalty  */
-    int TRAIL_LENGTH =                  12;         /* Number of historical positions to be considered  */
 
+    double TRAIL_DISTANCE_SCALE =       80.0;       /*  Positions farther than this have almost no trail penalty  */
+    int TRAIL_LENGTH =                  12;         /*  Number of historical positions to be considered  */
 
     /*
         Surfer Wheel

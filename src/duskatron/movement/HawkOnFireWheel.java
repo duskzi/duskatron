@@ -39,7 +39,6 @@ public class HawkOnFireWheel extends Wheel implements Constants {
             lastDestination = myPos;
         }
 
-
         List<Enemy> enemies = new ArrayList<>(bot.radar().getScannedBots().values());
         Enemy closest = bot.radar().getClosestEnemy();
 
