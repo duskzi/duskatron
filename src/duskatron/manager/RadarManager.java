@@ -74,8 +74,7 @@ public class RadarManager implements ManagerConstants {
 
         long age = bot.robot().getTime() - oldest.getLastScanTime();
 
-        // Keep refreshing targets in melee.
-        // In 1v1, only redirect when contact becomes stale.
+        /*  Keep refreshing targets in melee  */
         if (others > 1 || age > LOST_CONTACT_TIME) {
             lockOnTarget(oldest);
         }

@@ -2,6 +2,7 @@ package duskatron.gun.guns;
 
 import duskatron.context.DuskatronContext;
 import duskatron.enemy.Enemy;
+import duskatron.gun.VirtualBullet;
 
 import java.awt.*;
 
@@ -14,6 +15,8 @@ public abstract class Gun {
 
     public abstract void updateAimStatus(Enemy e, double bulletPower);
     public abstract String getName();
+
+    public void onVirtualBulletResult(VirtualBullet bullet, Enemy enemy, boolean hit) {}
 
     public void onPaint(Graphics2D g) {};
 }

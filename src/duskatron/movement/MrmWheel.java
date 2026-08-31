@@ -135,7 +135,7 @@ public class MrmWheel extends Wheel implements Constants {
 
             /*
                 Diamond-style orbital movement
-                perpendicular = safer, toward = more dangerous
+                perpendicular is safer, toward is more dangerous
              */
             double angleDifference = Utils.normalRelativeAngle(movementAngle - enemyBearing);
             double orbitalRisk = 0.25 + 0.75 * abs(cos(angleDifference));
@@ -148,9 +148,7 @@ public class MrmWheel extends Wheel implements Constants {
 
     private double getClosestBotRisk(List<Enemy> enemies, Vec2D destination) {
 
-        if (enemies.size() < 2) {
-            return 0.0;
-        }
+        if (enemies.size() < 2) { return 0.0; }
 
         int validEnemies = 0;
         int threatenedEnemies = 0;
@@ -263,55 +261,25 @@ public class MrmWheel extends Wheel implements Constants {
                 );
             }
 
-            int red =
-                    (int) (255 * normalized);
+            int red = (int) (255 * normalized);
+            int blue = (int) (255 * (1.0 - normalized));
 
-            int blue =
-                    (int) (255 * (1.0 - normalized));
+            g.setColor(new Color(red, 0, blue, 190));
 
-            g.setColor(
-                    new Color(
-                            red,
-                            0,
-                            blue,
-                            190
-                    )
-            );
+            int x = (int) point.location().x - radius;
+            int y = (int) point.location().y - radius;
 
-            int x =
-                    (int) point.location().x - radius;
-
-            int y =
-                    (int) point.location().y - radius;
-
-            g.fillOval(
-                    x,
-                    y,
-                    radius * 2,
-                    radius * 2
-            );
+            g.fillOval(x, y, radius, radius);
         }
 
         /*
          * Draw the MRM search circle.
          */
-        g.setColor(
-                new Color(
-                        255,
-                        255,
-                        255,
-                        100
-                )
-        );
+        g.setColor(new Color(255, 255, 255, 100));
 
-        int radiusAroundRobot =
-                (int) MRM_DISTANCE;
-
-        int robotX =
-                (int) bot.robot().getX();
-
-        int robotY =
-                (int) bot.robot().getY();
+        int radiusAroundRobot = (int) MRM_DISTANCE;
+        int robotX = (int) bot.robot().getX();
+        int robotY = (int) bot.robot().getY();
 
         g.drawOval(
                 robotX - radiusAroundRobot,
@@ -323,8 +291,7 @@ public class MrmWheel extends Wheel implements Constants {
         /*
          * Highlight the best point.
          */
-        RiskPoint best =
-                currentRiskPoints.get(0);
+        RiskPoint best = currentRiskPoints.getFirst();
 
         for (RiskPoint point : currentRiskPoints) {
             if (point.totalRisk() < best.totalRisk()) {
@@ -335,10 +302,10 @@ public class MrmWheel extends Wheel implements Constants {
         g.setColor(Color.GREEN);
 
         g.fillOval(
-                (int) best.location().x - 8,
-                (int) best.location().y - 8,
-                16,
-                16
+                (int) best.location().x - 4,
+                (int) best.location().y - 4,
+                8,
+                8
         );
 
         g.drawLine(

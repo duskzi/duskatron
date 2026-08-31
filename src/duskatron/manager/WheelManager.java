@@ -1,6 +1,7 @@
 package duskatron.manager;
 
 import duskatron.context.DuskatronContext;
+import duskatron.enemy.Enemy;
 import duskatron.math.Vec2D;
 import duskatron.movement.HawkOnFireWheel;
 import duskatron.movement.MrmWheel;
@@ -42,7 +43,18 @@ public class WheelManager implements ManagerConstants {
             If there's only one bot, use wave surfing
             otherwise use minimum risk movement
         */
-        if(bot.arena().is1v1())    { wheel = surfer; }
+        if(bot.arena().is1v1()) {
+
+            Enemy e = bot.radar().getClosestEnemy();
+
+            if(e != null) {
+                if (e.getDistance() < 200) {
+                    wheel = MRM;
+                } else {
+                    wheel = surfer;
+                }
+            }
+        }
 
         /*  Actually use the movement strategy  */
         wheel.move();

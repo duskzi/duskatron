@@ -6,6 +6,7 @@ import duskatron.gun.GunUtils;
 import duskatron.gun.VirtualBullet;
 import duskatron.gun.guns.CircularGun;
 import duskatron.gun.guns.Gun;
+import duskatron.gun.guns.GuessFactorGun;
 import duskatron.gun.guns.HeadOnGun;
 import duskatron.gun.guns.LinearGun;
 import duskatron.math.Vec2D;
@@ -32,19 +33,23 @@ public class GunManager implements ManagerConstants {
     */
     private static final HashMap<String, List<GunStats>> enemyGunStats = new HashMap<>();
 
+    Gun GF;
+
     public GunManager(DuskatronContext ctx) {
         this.bot = ctx;
 
         this.bullets =          new ArrayList<>();
         this.guns =             new ArrayList<>();
+        this.GF =               new GuessFactorGun(ctx);
 
         /*
             Returns all angles in
             absolute angle in radians
         */
+        guns.add(new HeadOnGun(ctx));
         guns.add(new LinearGun(ctx));
         guns.add(new CircularGun(ctx));
-        guns.add(new HeadOnGun(ctx));
+
     }
 
     /*
@@ -84,16 +89,16 @@ public class GunManager implements ManagerConstants {
 
         double angleInRadians = bestGun.aimstatus.getAngle();
 
-        if(bestGun.aimstatus.isOutside()) {
-            /*  Using Head-On  */
-            angleInRadians = guns.getFirst().aimstatus.getAngle();
+        if(bot.arena().is1v1()) {
+            GF.updateAimStatus(e, power);
+            angleInRadians = GF.aimstatus.getAngle();
         }
 
         double gunTurn = Utils.normalRelativeAngle(angleInRadians - bot.robot().getGunHeadingRadians());
         bot.robot().setTurnGunRightRadians(gunTurn);
 
         /*  Only shoot when pointing to enemy and heat is 0  */
-        if (Math.abs(gunTurn) < Math.toRadians(1.0) && bot.robot().getGunHeat() == 0) {
+        if (Math.abs(gunTurn) < GUN_TURN_PRECISION && bot.robot().getGunHeat() == 0) {
 
             bot.robot().setFire(power);
         }
@@ -106,15 +111,14 @@ public class GunManager implements ManagerConstants {
 
         bullets.add(
                 new VirtualBullet(
-                        enemy.getName(),
-                        gun.getName(),
+                        enemy.getName(), gun.getName(),
                         new Vec2D(
                                 bot.robot().getX(),
                                 bot.robot().getY()
                         ),
-                        power,
-                        angle,
-                        bot.robot().getTime()));
+                        power, angle, bot.robot().getTime()
+                )
+        );
     }
 
     /*
@@ -155,6 +159,7 @@ public class GunManager implements ManagerConstants {
             if (distance <= ROBOT_RADIUS) {
 
                 registerHit(bullet.getTargetName(), bullet.getGunName());
+                notifyGunOfResult(bullet, enemy, true);
                 bullets.remove(i);
                 continue;
             }
@@ -164,7 +169,17 @@ public class GunManager implements ManagerConstants {
             if (travelledDistance > originDist + MISS_DISTANCE_MARGIN) {
 
                 registerMiss(bullet.getTargetName(), bullet.getGunName());
+                notifyGunOfResult(bullet, enemy, false);
                 bullets.remove(i);
+            }
+        }
+    }
+
+    private void notifyGunOfResult(VirtualBullet bullet, Enemy enemy, boolean hit) {
+        for (Gun gun : guns) {
+            if (gun.getName().equals(bullet.getGunName())) {
+                gun.onVirtualBulletResult(bullet, enemy, hit);
+                break;
             }
         }
     }
@@ -316,19 +331,11 @@ public class GunManager implements ManagerConstants {
         for (VirtualBullet bullet : bullets) {
 
             double speed = GunUtils.getBulletSpeed(bullet.getPower());
-
-            double travelledDistance =
-                    (currentTime - bullet.getFireTime()) * speed;
-
+            double travelledDistance = (currentTime - bullet.getFireTime()) * speed;
             double angle = bullet.getAngle();
 
-            double x =
-                    bullet.getOrigin().x
-                            + Math.sin(angle) * travelledDistance;
-
-            double y =
-                    bullet.getOrigin().y
-                            + Math.cos(angle) * travelledDistance;
+            double x = bullet.getOrigin().x + Math.sin(angle) * travelledDistance;
+            double y = bullet.getOrigin().y + Math.cos(angle) * travelledDistance;
 
             Color color = getGunColor(bullet.getGunName());
 
@@ -347,18 +354,10 @@ public class GunManager implements ManagerConstants {
             );
 
             g.setColor(color);
-
-            g.fillOval(
-                    (int) x - 4,
-                    (int) y - 4,
-                    8,
-                    8
-            );
+            g.fillOval((int) x - 1, (int) y - 1, 2, 2);
         }
 
-        /*
-         * Gun statistics HUD
-         */
+        /*  Gun statistics HUD  */
         Enemy enemy = bot.radar().getClosestEnemy();
 
         if (enemy != null) {
@@ -372,15 +371,11 @@ public class GunManager implements ManagerConstants {
 
                 g.setFont(new Font("Arial", Font.BOLD, 14));
 
-                /*
-                 * Background
-                 */
+                /*  Background  */
                 g.setColor(new Color(0, 0, 0, 150));
                 g.fillRect(x - 5, y - 15, 180, 75);
 
-                /*
-                 * Gun color
-                 */
+                /*  Gun color  */
                 Color gunColor = getGunColor(best.getGunName());
                 g.setColor(gunColor);
 
@@ -395,18 +390,8 @@ public class GunManager implements ManagerConstants {
                  */
                 g.setColor(Color.WHITE);
 
-                g.drawString(
-                        "Hits: " + best.getHit(),
-                        x,
-                        y + 18
-                );
-
-                g.drawString(
-                        "Misses: " + best.getMisses(),
-                        x,
-                        y + 36
-                );
-
+                g.drawString("Hits: " + best.getHit(), x, y + 18);
+                g.drawString("Misses: " + best.getMisses(), x, y + 36);
                 g.drawString(
                         String.format(
                                 "Accuracy: %.1f%%",

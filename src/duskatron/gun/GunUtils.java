@@ -10,11 +10,11 @@ public class GunUtils implements ManagerConstants {
 
         if (distance < 50) {
             return 3;
-        } else if (distance < 250) {
+        } else if (distance < 200) {
             return 2.5;
-        } else if (distance < 350) {
+        } else if (distance < 240) {
             return 2;
-        } else if (distance < 400) {
+        } else if (distance < 360) {
             return 1.5;
         } else {
             return 1;
