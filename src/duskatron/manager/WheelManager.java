@@ -50,9 +50,7 @@ public class WheelManager implements ManagerConstants {
             if(e != null) {
                 if (e.getDistance() < 200) {
                     wheel = MRM;
-                } else {
-                    wheel = surfer;
-                }
+                } else wheel = surfer;
             }
         }
 

@@ -29,8 +29,8 @@ public interface Constants {
     /*
         Minimum Risk Movement (MRM)
     */
-    int MRM_POINT_COUNT =               32;         /*  How many points to use when sampling  */
-    double MRM_DISTANCE =               100.0;      /*  How far risk points are sampled from the bot  */
+    int MRM_POINT_COUNT =               48;         /*  How many points to use when sampling  */
+    double MRM_DISTANCE =               120.0;      /*  How far risk points are sampled from the bot  */
     double RANDOM_OFFSET =              50;         /*  How far randomly offset from MRM_DISTANCE  */
     double WALL_MARGIN =                40.0;       /*  Desired distance from arena walls  */
     /*
@@ -51,8 +51,8 @@ public interface Constants {
         Yeah, I know it sucks being in floating
         decimals but make sense for me
     */
-    double ENEMY_RISK_WEIGHT =          0.35;
-    double CLOSEST_BOT_RISK_WEIGHT =    0.30;
+    double ENEMY_RISK_WEIGHT =          0.20;
+    double CLOSEST_BOT_RISK_WEIGHT =    0.40;
     double WALL_RISK_WEIGHT =           0.20;
     double TRAIL_RISK_WEIGHT =          0.15;
 

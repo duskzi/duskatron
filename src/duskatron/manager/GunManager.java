@@ -6,7 +6,6 @@ import duskatron.gun.GunUtils;
 import duskatron.gun.VirtualBullet;
 import duskatron.gun.guns.CircularGun;
 import duskatron.gun.guns.Gun;
-import duskatron.gun.guns.GuessFactorGun;
 import duskatron.gun.guns.HeadOnGun;
 import duskatron.gun.guns.LinearGun;
 import duskatron.math.Vec2D;
@@ -19,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static duskatron.gun.GunUtils.getBestPower;
-
 public class GunManager implements ManagerConstants {
 
     private final DuskatronContext bot;
@@ -28,19 +25,14 @@ public class GunManager implements ManagerConstants {
     private final List<VirtualBullet> bullets;
     private final List<Gun> guns;
 
-    /*
-        Enemy name: statistics for every gun used against that enemy
-    */
+    /*  Statistics for every gun used against that enemy  */
     private static final HashMap<String, List<GunStats>> enemyGunStats = new HashMap<>();
-
-    Gun GF;
 
     public GunManager(DuskatronContext ctx) {
         this.bot = ctx;
 
         this.bullets =          new ArrayList<>();
         this.guns =             new ArrayList<>();
-        this.GF =               new GuessFactorGun(ctx);
 
         /*
             Returns all angles in
@@ -69,11 +61,12 @@ public class GunManager implements ManagerConstants {
         */
         for (Enemy enemy : targets.values()) { ensureGunStats(enemy); }
 
-        double power =  GunUtils.getBestPower(e.getDistance(), bot.robot().getEnergy());
+        double power =  GunUtils.getBestPower(bot, e);
         long time =     bot.robot().getTime();
 
         /*  Choose the best gun for the current enemy  */
         Gun bestGun = getBestGunAgainst(e.getName());
+
 
         if (time % VIRTUAL_AIM_DELAY == 0) {
             for (Gun gun : guns) {
@@ -89,16 +82,13 @@ public class GunManager implements ManagerConstants {
 
         double angleInRadians = bestGun.aimstatus.getAngle();
 
-        if(bot.arena().is1v1()) {
-            GF.updateAimStatus(e, power);
-            angleInRadians = GF.aimstatus.getAngle();
-        }
-
         double gunTurn = Utils.normalRelativeAngle(angleInRadians - bot.robot().getGunHeadingRadians());
         bot.robot().setTurnGunRightRadians(gunTurn);
 
         /*  Only shoot when pointing to enemy and heat is 0  */
-        if (Math.abs(gunTurn) < GUN_TURN_PRECISION && bot.robot().getGunHeat() == 0) {
+        if (Math.abs(gunTurn) < GUN_TURN_PRECISION
+                && bot.robot().getGunHeat() == 0
+                && bot.robot().getEnergy() > 0.2) {
 
             bot.robot().setFire(power);
         }
