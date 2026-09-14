@@ -43,11 +43,11 @@ public class WheelManager implements ManagerConstants {
             If there's only one bot, use wave surfing
             otherwise use minimum risk movement
         */
-        if(bot.arena().is1v1()) {
+        if (bot.arena().is1v1()) {
 
             Enemy e = bot.radar().getClosestEnemy();
 
-            if(e != null) {
+            if (e != null) {
                 if (e.getDistance() < 200) {
                     wheel = MRM;
                 } else wheel = surfer;
@@ -56,6 +56,7 @@ public class WheelManager implements ManagerConstants {
 
         /*  Actually use the movement strategy  */
         wheel.move();
+
     }
 
     /*  Records previous places that we passed  */

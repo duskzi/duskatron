@@ -99,6 +99,9 @@ public class GunManager implements ManagerConstants {
 
         double angle = gun.aimstatus.getAngle();
 
+        double distAtFire = enemy.getPosition().distance(
+                new Vec2D(bot.robot().getX(), bot.robot().getY()));
+
         bullets.add(
                 new VirtualBullet(
                         enemy.getName(), gun.getName(),
@@ -106,7 +109,7 @@ public class GunManager implements ManagerConstants {
                                 bot.robot().getX(),
                                 bot.robot().getY()
                         ),
-                        power, angle, bot.robot().getTime()
+                        power, angle, bot.robot().getTime(), distAtFire
                 )
         );
     }
@@ -155,7 +158,7 @@ public class GunManager implements ManagerConstants {
             }
 
 
-            double originDist = bullet.getOrigin().distance(enemyPosition);
+            double originDist = bullet.getDistanceAtFire();
             if (travelledDistance > originDist + MISS_DISTANCE_MARGIN) {
 
                 registerMiss(bullet.getTargetName(), bullet.getGunName());
@@ -276,7 +279,7 @@ public class GunManager implements ManagerConstants {
     public Gun getBestGunAgainst(String enemyName) {
 
         GunStats bestStats = getBestGunStats(enemyName);
-        if (bestStats == null) { return new HeadOnGun(bot); }
+        if (bestStats == null) { return guns.get(0); }
 
         for (Gun gun : guns) {
             if (gun.getName().equals(bestStats.getGunName())) { return gun; }

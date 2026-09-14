@@ -62,8 +62,9 @@ public class Duskatron extends AdvancedRobot {
 
         /*  Bot colors  */
         setRadarColor(Color.ORANGE);
-        setBodyColor(Color.BLACK);
-        setGunColor(Color.DARK_GRAY);
+        setBodyColor(Color.DARK_GRAY);
+        setGunColor(Color.BLACK);
+        setBulletColor(Color.ORANGE);
 
         /*  Debug  */
         System.out.println("Summary:");
@@ -103,7 +104,6 @@ public class Duskatron extends AdvancedRobot {
             setBodyColor(rainbowColor);
 
             execute();
-
         }
     }
 

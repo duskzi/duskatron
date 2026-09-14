@@ -18,7 +18,7 @@ public interface ManagerConstants {
     */
     double ROBOT_RADIUS =           18.0;                    /*  Radius of a bot when testing virtual bullets  */
     double MISS_DISTANCE_MARGIN =   60.0;                    /*  Extra distance to the enemy when checking for collisions  */
-    double VIRTUAL_AIM_DELAY =      6.7;                     /*  Delay between virtual firing  */
+    long   VIRTUAL_AIM_DELAY =      7;                       /*  Delay between virtual firing  */
     double GUN_TURN_PRECISION =     Math.toRadians(3.0);     /*  Value of gun's precision offset before shooting   */
 
     /*

@@ -4,13 +4,14 @@ import duskatron.math.Vec2D;
 
 public class VirtualBullet {
 
-    public VirtualBullet(String enemy, String gun, Vec2D initialPos, double power, double angle, long timeWhenFired) {
+    public VirtualBullet(String enemy, String gun, Vec2D initialPos, double power, double angle, long timeWhenFired, double distanceAtFire) {
         this.enemy = enemy;
         this.gun = gun;
         this.initialPos = initialPos;
         this.power = power;
         this.angle = angle;                     /*  Radians  */
         this.timeWhenFired = timeWhenFired;
+        this.distanceAtFire = distanceAtFire;
     }
 
     String enemy;
@@ -21,6 +22,7 @@ public class VirtualBullet {
     double power;
     double angle;    /*  Radians  */
     long timeWhenFired;
+    double distanceAtFire;
 
     public String getTargetName()   { return this.enemy; }
     public String getGunName()      { return gun; }
@@ -28,4 +30,5 @@ public class VirtualBullet {
     public double getPower()        { return power; }
     public double getAngle()        { return angle; }
     public long getFireTime()       { return timeWhenFired; }
+    public double getDistanceAtFire() { return distanceAtFire; }
 }

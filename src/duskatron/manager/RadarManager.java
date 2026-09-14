@@ -59,7 +59,6 @@ public class RadarManager implements ManagerConstants {
     public void handleScanning() {
         int others = bot.robot().getOthers();
 
-        /*  Sweeps if we don't have all enemies scanned yet  */
         if (targets.size() < others) {
             startSweep();
             return;
@@ -72,12 +71,7 @@ public class RadarManager implements ManagerConstants {
             return;
         }
 
-        long age = bot.robot().getTime() - oldest.getLastScanTime();
-
-        /*  Keep refreshing targets in melee  */
-        if (others > 1 || age > LOST_CONTACT_TIME) {
-            lockOnTarget(oldest);
-        }
+        lockOnTarget(oldest);
     }
 
     /*  Return the oldest target or null  */
